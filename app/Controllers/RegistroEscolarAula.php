@@ -56,19 +56,84 @@ class RegistroEscolarAula extends BaseController
         ];
 
         $resultado = $modeloUsuarios->insert($datosCuenta);
+        if ($resultado === false) {
+            $puenteVista = new PuenteVistaAula();
 
-if ($resultado === false) {
-    $puenteVista = new PuenteVistaAula();
+            return $puenteVista->mostrar('acceso.registro', [
+                'titulo' => 'Crear cuenta',
+                'errores' => ['No se pudo registrar la cuenta.']
+            ]);
+        }
 
-    return $puenteVista->mostrar('acceso.registro', [
-        'titulo' => 'Crear cuenta',
-        'errores' => ['No se pudo registrar la cuenta.']
-    ]);
-}
+        $configuracionCorreo = config('Email');
+        $correoActivacion = service('email');
 
-return redirect()
-    ->to('/registro')
-    ->with('mensajeRegistro', 'Cuenta registrada correctamente. Pendiente de activación.');
+        $enlaceActivacion = site_url(
+            'activar/' . $datosCuenta['verification_key']
+        );
+
+        $mensajeCorreo = "Hola {$datosCuenta['name']},\n\n"
+            . "Para activar tu cuenta de OrganizaAula, abre el siguiente enlace:\n\n"
+            . $enlaceActivacion
+            . "\n\nOrganizaAula";
+
+        $correoActivacion->setFrom(
+            $configuracionCorreo->fromEmail,
+            $configuracionCorreo->fromName
+        );
+
+        $correoActivacion->setTo($datosCuenta['email']);
+        $correoActivacion->setSubject('Activa tu cuenta de OrganizaAula');
+        $correoActivacion->setMessage($mensajeCorreo);
+
+        if (!$correoActivacion->send()) {
+            return redirect()
+                ->to('/registro')
+                ->with(
+                    'mensajeRegistro',
+                    'La cuenta se guardó, pero no se pudo enviar el correo de activación.'
+                );
+        }
+
+        return redirect()
+            ->to('/registro')
+            ->with(
+                'mensajeRegistro',
+                'Cuenta registrada correctamente. Revisa tu correo para activarla.'
+            );
+
     }
+
+      public function activarCuenta(string $llave)
+    {
+        if (strlen($llave) !== 64 || !ctype_xdigit($llave)) {
+        return redirect()->to('/ingreso')
+            ->with('errorActivacion', 'El enlace de activación no es válido.');
+    }
+
+    $modeloUsuarios = new \App\Models\DatosUsuarioAula();
+
+    $usuario = $modeloUsuarios
+        ->where('verification_key', $llave)
+        ->first();
+
+    if (!$usuario || (int) $usuario['active'] !== 0) {
+        return redirect()->to('/ingreso')
+            ->with('errorActivacion', 'El enlace de activación no es válido o ya fue utilizado.');
+    }
+
+    $resultado = $modeloUsuarios->update($usuario['id'], [
+        'active' => 1,
+        'verification_key' => null
+    ]);
+
+    if ($resultado === false) {
+        return redirect()->to('/ingreso')
+            ->with('errorActivacion', 'No se pudo activar la cuenta.');
+    }
+
+    return redirect()->to('/ingreso')
+        ->with('mensajeActivacion', 'Cuenta activada correctamente. Ya puedes iniciar sesión.');
+}
 
 }
