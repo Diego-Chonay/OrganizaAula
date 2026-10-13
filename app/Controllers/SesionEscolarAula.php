@@ -66,14 +66,62 @@ class SesionEscolarAula extends BaseController
             'autenticado' => true
         ]);
 
-        return redirect()->to('/');
+                $respuesta = redirect()->to('/');
+
+        if ($this->request->getPost('remember') === '1') {
+            $claveRecuerdo = bin2hex(random_bytes(32));
+            $duracionRecuerdo = 7 * 24 * 60 * 60;
+
+            $actualizado = $modeloUsuarios->update($usuario['id'], [
+                'remember_token_hash' => hash('sha256', $claveRecuerdo),
+                'remember_expires_at' => date(
+                    'Y-m-d H:i:s',
+                    time() + $duracionRecuerdo
+                )
+            ]);
+
+            if ($actualizado) {
+                $respuesta->setCookie([
+                    'name' => 'recuerdo_aula',
+                    'value' => $usuario['id'] . ':' . $claveRecuerdo,
+                    'expire' => $duracionRecuerdo,
+                    'path' => '/',
+                    'secure' => false,
+                    'httponly' => true,
+                    'samesite' => 'Lax'
+                ]);
+            }
+                } else {
+            $modeloUsuarios->update($usuario['id'], [
+                'remember_token_hash' => null,
+                'remember_expires_at' => null
+            ]);
+
+            $respuesta->deleteCookie('recuerdo_aula');
+        }
+
+        return $respuesta;
     }
 
     public function cerrarSesion()
 {
+    $idUsuario = session()->get('usuario_id');
+
+    if ($idUsuario !== null) {
+        $modeloUsuarios = new DatosUsuarioAula();
+
+        $modeloUsuarios->update($idUsuario, [
+            'remember_token_hash' => null,
+            'remember_expires_at' => null
+        ]);
+    }
+
     session()->destroy();
 
-    return redirect()->to('/ingreso');
+    $respuesta = redirect()->to('/ingreso');
+    $respuesta->deleteCookie('recuerdo_aula');
+
+    return $respuesta;
 }
 
 }

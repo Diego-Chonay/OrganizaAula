@@ -38,6 +38,62 @@ abstract class BaseController extends Controller
 
         // Caution: Do not edit this line.
         parent::initController($request, $response, $logger);
+                if (session()->get('autenticado') === true) {
+            return;
+        }
+
+        $valorRecuerdo = $this->request->getCookie('recuerdo_aula');
+
+        if (!is_string($valorRecuerdo)) {
+            return;
+        }
+
+        $partesRecuerdo = explode(':', $valorRecuerdo, 2);
+
+        if (
+            count($partesRecuerdo) !== 2 ||
+            !ctype_digit($partesRecuerdo[0]) ||
+            (int) $partesRecuerdo[0] < 1 ||
+            strlen($partesRecuerdo[1]) !== 64 ||
+            !ctype_xdigit($partesRecuerdo[1])
+        ) {
+            return;
+        }
+
+        $modeloUsuarios = new \App\Models\DatosUsuarioAula();
+
+        $usuario = $modeloUsuarios->find((int) $partesRecuerdo[0]);
+
+        if (
+            !$usuario ||
+            (int) $usuario['active'] !== 1 ||
+            empty($usuario['remember_token_hash']) ||
+            empty($usuario['remember_expires_at'])
+        ) {
+            return;
+        }
+
+        $fechaVencimiento = strtotime($usuario['remember_expires_at']);
+
+        if ($fechaVencimiento === false || $fechaVencimiento <= time()) {
+            return;
+        }
+
+        $hashRecibido = hash('sha256', $partesRecuerdo[1]);
+
+        if (!hash_equals($usuario['remember_token_hash'], $hashRecibido)) {
+            return;
+        }
+
+        session()->regenerate(true);
+
+        session()->set([
+            'usuario_id' => $usuario['id'],
+            'usuario_nombre' => $usuario['name'],
+            'rol_academico' => $usuario['academic_role'],
+            'es_administrador' => $usuario['administrator'],
+            'autenticado' => true
+        ]);
 
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');

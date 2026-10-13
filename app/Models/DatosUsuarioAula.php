@@ -25,6 +25,8 @@ class DatosUsuarioAula extends Model
         'verification_key',
         'recovery_key',
         'recovery_expires_at',
+        'remember_token_hash',
+        'remember_expires_at',
     ];
 
     protected $useTimestamps = true;
