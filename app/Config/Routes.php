@@ -24,3 +24,5 @@ $routes->post('/perfil/contrasena/guardar', 'PerfilEscolarAula::guardarContrasen
 $routes->get('/perfil/imagen', 'PerfilEscolarAula::formularioImagen');
 $routes->post('/perfil/imagen/guardar', 'PerfilEscolarAula::guardarImagen');
 $routes->post('/perfil/imagen/eliminar', 'PerfilEscolarAula::eliminarImagen');
+$routes->get('/usuarios', 'UsuariosEscolaresAula::listarUsuarios');
+$routes->get('/usuarios/(:num)', 'UsuariosEscolaresAula::verUsuario/$1');
