@@ -14,3 +14,13 @@ $routes->get('/recuperar/restablecer/(:segment)', 'RecuperacionEscolarAula::form
 $routes->post('/recuperar/actualizar', 'RecuperacionEscolarAula::actualizarContrasena');
 $routes->post('/ingreso/validar', 'SesionEscolarAula::validarIngreso');
 $routes->post('/salir', 'SesionEscolarAula::cerrarSesion');
+$routes->get('/perfil', 'PerfilEscolarAula::mostrarPerfil');
+$routes->get('/perfil/confirmar', 'PerfilEscolarAula::confirmarEdicion');
+$routes->post('/perfil/confirmar', 'PerfilEscolarAula::verificarContrasena');
+$routes->get('/perfil/editar', 'PerfilEscolarAula::mostrarEdicion');
+$routes->post('/perfil/guardar', 'PerfilEscolarAula::guardarPerfil');
+$routes->get('/perfil/contrasena', 'PerfilEscolarAula::formularioContrasena');
+$routes->post('/perfil/contrasena/guardar', 'PerfilEscolarAula::guardarContrasena');
+$routes->get('/perfil/imagen', 'PerfilEscolarAula::formularioImagen');
+$routes->post('/perfil/imagen/guardar', 'PerfilEscolarAula::guardarImagen');
+$routes->post('/perfil/imagen/eliminar', 'PerfilEscolarAula::eliminarImagen');
