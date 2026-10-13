@@ -9,6 +9,10 @@
 
     <h1>{{ $titulo }}</h1>
 
+    @if (session('mensajeRestablecimiento'))
+    <p>{{ session('mensajeRestablecimiento') }}</p>
+@endif
+
     @if (session('mensajeActivacion'))
     <p>{{ session('mensajeActivacion') }}</p>
 @endif
