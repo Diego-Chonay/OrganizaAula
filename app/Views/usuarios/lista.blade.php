@@ -9,6 +9,14 @@
 
     <h1>{{ $titulo }}</h1>
 
+    @if (session('mensajeUsuarios'))
+    <p>{{ session('mensajeUsuarios') }}</p>
+@endif
+
+    <a href="/usuarios/nuevo">Nuevo usuario</a>
+
+<br><br>
+
     <a href="/">Inicio</a>
 
     <p>

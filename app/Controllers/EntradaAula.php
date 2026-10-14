@@ -10,11 +10,12 @@ class EntradaAula extends BaseController
     {
         $puenteVista = new PuenteVistaAula();
 
-       $datosPortada = [
+    $datosPortada = [
     'titulo' => 'OrganizaAula',
     'mensaje' => 'Bienvenido al organizador de tareas escolares',
     'autenticado' => session()->get('autenticado') === true,
-    'nombreUsuario' => session()->get('usuario_nombre')
+    'nombreUsuario' => session()->get('usuario_nombre'),
+    'esAdministrador' => (int) session()->get('es_administrador') === 1
 ];
 
         return $puenteVista->mostrar('portada_aula', $datosPortada);

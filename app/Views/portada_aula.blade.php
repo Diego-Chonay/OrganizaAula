@@ -13,6 +13,14 @@
 @if ($autenticado)
     <p>Hola, {{ $nombreUsuario }}</p>
 
+    <p>
+    <a href="/perfil">Mi perfil</a>
+
+    @if ($esAdministrador)
+        | <a href="/usuarios">Usuarios</a>
+    @endif
+</p>
+
     <form action="/salir" method="post">
         {!! csrf_field() !!}
         <button type="submit">Cerrar sesión</button>
