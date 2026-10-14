@@ -35,3 +35,6 @@ $routes->get('/tareas', 'TareasEscolaresAula::listarTareas');
 $routes->get('/tareas/nueva', 'TareasEscolaresAula::formularioNuevaTarea');
 $routes->post('/tareas/guardar', 'TareasEscolaresAula::guardarNuevaTarea');
 $routes->get('/tareas/(:num)', 'TareasEscolaresAula::verTarea/$1');
+$routes->get('/tareas/(:num)/editar', 'TareasEscolaresAula::formularioEditarTarea/$1');
+$routes->post('/tareas/(:num)/guardar', 'TareasEscolaresAula::guardarEdicionTarea/$1');
+$routes->post('/tareas/(:num)/eliminar', 'TareasEscolaresAula::eliminarTarea/$1');

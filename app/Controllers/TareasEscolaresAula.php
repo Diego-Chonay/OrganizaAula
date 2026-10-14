@@ -168,9 +168,169 @@ class TareasEscolaresAula extends BaseController
     $puenteVista = new PuenteVistaAula();
 
     return $puenteVista->mostrar('tareas.detalle', [
-        'titulo' => 'Información de la tarea',
+    'titulo' => 'Información de la tarea',
+    'tarea' => $tarea,
+    'esProfesor' => $usuario['academic_role'] === 'teacher'
+]);
+}
+
+    public function formularioEditarTarea(int $id)
+{
+    if (session()->get('autenticado') !== true) {
+        return redirect()->to('/ingreso');
+    }
+
+    $modeloUsuarios = new DatosUsuarioAula();
+
+    $usuario = $modeloUsuarios->find(
+        (int) session()->get('usuario_id')
+    );
+
+    if (!$usuario || (int) $usuario['active'] !== 1) {
+        session()->destroy();
+
+        return redirect()->to('/ingreso');
+    }
+
+    if ($usuario['academic_role'] !== 'teacher') {
+        return $this->response
+            ->setStatusCode(403)
+            ->setBody('Solo los profesores pueden editar tareas.');
+    }
+
+    $modeloTareas = new DatosTareaAula();
+
+    $tarea = $modeloTareas->find($id);
+
+    if (!$tarea) {
+        return $this->response
+            ->setStatusCode(404)
+            ->setBody('La tarea solicitada no existe.');
+    }
+
+    $puenteVista = new PuenteVistaAula();
+
+    return $puenteVista->mostrar('tareas.editar', [
+        'titulo' => 'Editar tarea',
         'tarea' => $tarea
     ]);
+}
+
+    public function guardarEdicionTarea(int $id)
+{
+    if (session()->get('autenticado') !== true) {
+        return redirect()->to('/ingreso');
+    }
+
+    $modeloUsuarios = new DatosUsuarioAula();
+
+    $usuario = $modeloUsuarios->find(
+        (int) session()->get('usuario_id')
+    );
+
+    if (!$usuario || (int) $usuario['active'] !== 1) {
+        session()->destroy();
+        return redirect()->to('/ingreso');
+    }
+
+    if ($usuario['academic_role'] !== 'teacher') {
+        return $this->response
+            ->setStatusCode(403)
+            ->setBody('Solo los profesores pueden editar tareas.');
+    }
+
+    $modeloTareas = new DatosTareaAula();
+
+    $tarea = $modeloTareas->find($id);
+
+    if (!$tarea) {
+        return $this->response
+            ->setStatusCode(404)
+            ->setBody('La tarea solicitada no existe.');
+    }
+
+    $descripcion = trim((string) $this->request->getPost('description'));
+
+    $puenteVista = new PuenteVistaAula();
+
+    $reglas = [
+        'description' => 'required|max_length[255]'
+    ];
+
+    if (!$this->validateData(['description' => $descripcion], $reglas)) {
+        $tarea['description'] = $descripcion;
+
+        return $puenteVista->mostrar('tareas.editar', [
+            'titulo' => 'Editar tarea',
+            'tarea' => $tarea,
+            'errores' => $this->validator->getErrors()
+        ]);
+    }
+
+    $resultado = $modeloTareas->update($id, [
+        'description' => $descripcion
+    ]);
+
+    if ($resultado === false) {
+        $tarea['description'] = $descripcion;
+
+        return $puenteVista->mostrar('tareas.editar', [
+            'titulo' => 'Editar tarea',
+            'tarea' => $tarea,
+            'errores' => ['No fue posible actualizar la tarea.']
+        ]);
+    }
+
+    return redirect()
+        ->to('/tareas/' . $id)
+        ->with('mensajeTareas', 'La tarea se actualizó correctamente.');
+}
+
+    public function eliminarTarea(int $id)
+{
+    if (session()->get('autenticado') !== true) {
+        return redirect()->to('/ingreso');
+    }
+
+    $modeloUsuarios = new DatosUsuarioAula();
+
+    $usuario = $modeloUsuarios->find(
+        (int) session()->get('usuario_id')
+    );
+
+    if (!$usuario || (int) $usuario['active'] !== 1) {
+        session()->destroy();
+
+        return redirect()->to('/ingreso');
+    }
+
+    if ($usuario['academic_role'] !== 'teacher') {
+        return $this->response
+            ->setStatusCode(403)
+            ->setBody('Solo los profesores pueden eliminar tareas.');
+    }
+
+    $modeloTareas = new DatosTareaAula();
+
+    $tarea = $modeloTareas->find($id);
+
+    if (!$tarea) {
+        return $this->response
+            ->setStatusCode(404)
+            ->setBody('La tarea solicitada no existe.');
+    }
+
+    $resultado = $modeloTareas->delete($id);
+
+    if ($resultado === false) {
+        return redirect()
+            ->to('/tareas/' . $id)
+            ->with('mensajeTareas', 'No fue posible eliminar la tarea.');
+    }
+
+    return redirect()
+        ->to('/tareas')
+        ->with('mensajeTareas', 'La tarea se eliminó correctamente.');
 }
 
 }
