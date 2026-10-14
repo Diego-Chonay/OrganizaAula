@@ -31,3 +31,7 @@ $routes->get('/usuarios/(:num)', 'UsuariosEscolaresAula::verUsuario/$1');
 $routes->get('/usuarios/(:num)/editar', 'UsuariosEscolaresAula::formularioEditarUsuario/$1');
 $routes->post('/usuarios/(:num)/guardar', 'UsuariosEscolaresAula::guardarEdicionUsuario/$1');
 $routes->post('/usuarios/(:num)/desactivar', 'UsuariosEscolaresAula::desactivarUsuario/$1');
+$routes->get('/tareas', 'TareasEscolaresAula::listarTareas');
+$routes->get('/tareas/nueva', 'TareasEscolaresAula::formularioNuevaTarea');
+$routes->post('/tareas/guardar', 'TareasEscolaresAula::guardarNuevaTarea');
+$routes->get('/tareas/(:num)', 'TareasEscolaresAula::verTarea/$1');
