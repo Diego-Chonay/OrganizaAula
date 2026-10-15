@@ -7,6 +7,8 @@
 </head>
 <body>
 
+    @include('componentes.navegacion')
+
     <h1>{{ $titulo }}</h1>
 
     <form action="/perfil/imagen/guardar" method="post" enctype="multipart/form-data">

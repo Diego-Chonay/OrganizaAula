@@ -7,6 +7,8 @@
 </head>
 <body>
 
+    @include('componentes.navegacion')
+
     <h1>{{ $titulo }}</h1>
 
     <p>Introduce tu correo electrónico para recuperar tu contraseña.</p>

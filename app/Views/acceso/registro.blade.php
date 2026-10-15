@@ -6,6 +6,8 @@
 </head>
 <body>
 
+    @include('componentes.navegacion')
+
     <h1>{{ $titulo }}</h1>
 
 @if (session('mensajeRegistro'))

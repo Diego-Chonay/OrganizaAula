@@ -7,6 +7,8 @@
 </head>
 <body>
 
+    @include('componentes.navegacion')
+
     <h1>{{ $titulo }}</h1>
 
     @if (session('mensajeTareas'))
@@ -19,7 +21,7 @@
     </p>
 @endif
 
-    <a href="/">Inicio</a>
+
 
     <p>
         <a href="/tareas?orden=nuevos">Newer</a>

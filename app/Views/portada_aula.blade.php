@@ -2,30 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>OrganizaAula</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $titulo }}</title>
 </head>
 <body>
+
+    @include('componentes.navegacion')
 
     <h1>{{ $titulo }}</h1>
 
     <p>{{ $mensaje }}</p>
 
-@if ($autenticado)
-    <p>Hola, {{ $nombreUsuario }}</p>
-
-    <p>
-    <a href="/perfil">Mi perfil</a>
-
-    @if ($esAdministrador)
-        | <a href="/usuarios">Usuarios</a>
-    @endif
-</p>
-
-    <form action="/salir" method="post">
-        {!! csrf_field() !!}
-        <button type="submit">Cerrar sesión</button>
-    </form>
-@endif
 
 </body>
 </html>
