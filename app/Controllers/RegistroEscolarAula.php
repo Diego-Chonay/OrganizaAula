@@ -7,15 +7,18 @@ use App\Libraries\PuenteVistaAula;
 class RegistroEscolarAula extends BaseController
 {
     public function formulario()
-    {
-        $puenteVista = new PuenteVistaAula();
+{
+    $puenteVista = new PuenteVistaAula();
 
-        $datosVista = [
-            'titulo' => 'Crear cuenta'
-        ];
+    $datosVista = [
+        'titulo' => lang('InterfazAula.tituloRegistro'),
+        'nombreRegistro' => session('nombreRegistro') ?? '',
+        'correoRegistro' => session('correoRegistro') ?? '',
+        'errores' => session('erroresRegistro') ?? []
+    ];
 
-        return $puenteVista->mostrar('acceso.registro', $datosVista);
-    }
+    return $puenteVista->mostrar('acceso.registro', $datosVista);
+}
 
     public function guardarCuenta()
     {
@@ -26,16 +29,34 @@ class RegistroEscolarAula extends BaseController
             'password_repeat' => 'required|matches[password]'
         ];
 
-        if (!$this->validate($reglasRegistro)) {
-            $puenteVista = new PuenteVistaAula();
+        $mensajesRegistro = [
+        'name' => [
+        'required' => lang('InterfazAula.registroNombreObligatorio'),
+        'min_length' => lang('InterfazAula.registroNombreCorto'),
+        'max_length' => lang('InterfazAula.registroNombreLargo')
+    ],
+    'email' => [
+        'required' => lang('InterfazAula.registroCorreoObligatorio'),
+        'valid_email' => lang('InterfazAula.registroCorreoInvalido'),
+        'is_unique' => lang('InterfazAula.registroCorreoExistente')
+    ],
+    'password' => [
+        'required' => lang('InterfazAula.registroContrasenaObligatoria'),
+        'min_length' => lang('InterfazAula.registroContrasenaCorta')
+    ],
+    'password_repeat' => [
+        'required' => lang('InterfazAula.registroRepeticionObligatoria'),
+        'matches' => lang('InterfazAula.registroContrasenasDistintas')
+    ]
+];
 
-            $datosVista = [
-                'titulo' => 'Crear cuenta',
-                'errores' => $this->validator->getErrors()
-            ];
-
-            return $puenteVista->mostrar('acceso.registro', $datosVista);
-        }
+        if (!$this->validate($reglasRegistro, $mensajesRegistro)) {
+    return redirect()
+        ->to('/registro')
+        ->with('nombreRegistro', trim((string) $this->request->getPost('name')))
+        ->with('correoRegistro', trim((string) $this->request->getPost('email')))
+        ->with('erroresRegistro', $this->validator->getErrors());
+}
 
         $modeloUsuarios = new \App\Models\DatosUsuarioAula();
 
@@ -57,13 +78,12 @@ class RegistroEscolarAula extends BaseController
 
         $resultado = $modeloUsuarios->insert($datosCuenta);
         if ($resultado === false) {
-            $puenteVista = new PuenteVistaAula();
-
-            return $puenteVista->mostrar('acceso.registro', [
-                'titulo' => 'Crear cuenta',
-                'errores' => ['No se pudo registrar la cuenta.']
-            ]);
-        }
+    return redirect()
+        ->to('/registro')
+        ->with('nombreRegistro', trim((string) $this->request->getPost('name')))
+        ->with('correoRegistro', trim((string) $this->request->getPost('email')))
+        ->with('erroresRegistro', [lang('InterfazAula.registroFallido')]);
+}
 
         $configuracionCorreo = config('Email');
         $correoActivacion = service('email');
@@ -72,10 +92,12 @@ class RegistroEscolarAula extends BaseController
             'activar/' . $datosCuenta['verification_key']
         );
 
-        $mensajeCorreo = "Hola {$datosCuenta['name']},\n\n"
-            . "Para activar tu cuenta de OrganizaAula, abre el siguiente enlace:\n\n"
-            . $enlaceActivacion
-            . "\n\nOrganizaAula";
+        $mensajeCorreo = lang('InterfazAula.correoActivacionSaludo')
+    . " {$datosCuenta['name']},\n\n"
+    . lang('InterfazAula.correoActivacionInstruccion')
+    . "\n\n"
+    . $enlaceActivacion
+    . "\n\nOrganizaAula";
 
         $correoActivacion->setFrom(
             $configuracionCorreo->fromEmail,
@@ -83,7 +105,7 @@ class RegistroEscolarAula extends BaseController
         );
 
         $correoActivacion->setTo($datosCuenta['email']);
-        $correoActivacion->setSubject('Activa tu cuenta de OrganizaAula');
+        $correoActivacion->setSubject(lang('InterfazAula.correoActivacionAsunto'));
         $correoActivacion->setMessage($mensajeCorreo);
 
         if (!$correoActivacion->send()) {
@@ -91,7 +113,7 @@ class RegistroEscolarAula extends BaseController
                 ->to('/registro')
                 ->with(
                     'mensajeRegistro',
-                    'La cuenta se guardó, pero no se pudo enviar el correo de activación.'
+                    lang('InterfazAula.registroCorreoFallido')
                 );
         }
 
@@ -99,7 +121,7 @@ class RegistroEscolarAula extends BaseController
             ->to('/registro')
             ->with(
                 'mensajeRegistro',
-                'Cuenta registrada correctamente. Revisa tu correo para activarla.'
+                lang('InterfazAula.registroExitoso')
             );
 
     }
@@ -108,7 +130,7 @@ class RegistroEscolarAula extends BaseController
     {
         if (strlen($llave) !== 64 || !ctype_xdigit($llave)) {
         return redirect()->to('/ingreso')
-            ->with('errorActivacion', 'El enlace de activación no es válido.');
+            ->with('errorActivacion', lang('InterfazAula.activacionInvalida'));
     }
 
     $modeloUsuarios = new \App\Models\DatosUsuarioAula();
@@ -119,7 +141,7 @@ class RegistroEscolarAula extends BaseController
 
     if (!$usuario || (int) $usuario['active'] !== 0) {
         return redirect()->to('/ingreso')
-            ->with('errorActivacion', 'El enlace de activación no es válido o ya fue utilizado.');
+            ->with('errorActivacion', lang('InterfazAula.activacionUtilizada'));
     }
 
     $resultado = $modeloUsuarios->update($usuario['id'], [
@@ -129,11 +151,11 @@ class RegistroEscolarAula extends BaseController
 
     if ($resultado === false) {
         return redirect()->to('/ingreso')
-            ->with('errorActivacion', 'No se pudo activar la cuenta.');
+            ->with('errorActivacion', lang('InterfazAula.activacionFallida'));
     }
 
     return redirect()->to('/ingreso')
-        ->with('mensajeActivacion', 'Cuenta activada correctamente. Ya puedes iniciar sesión.');
+        ->with('mensajeActivacion', lang('InterfazAula.activacionExitosa'));
 }
 
 }

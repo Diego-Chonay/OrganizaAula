@@ -28,12 +28,12 @@
         {!! csrf_field() !!}
 
         <label for="name">{{ lang('InterfazAula.nombre') }}:</label>
-        <input type="text" id="name" name="name">
+        <input type="text" id="name" name="name" value="{{ $nombreRegistro ?? '' }}">
 
         <br><br>
 
         <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
-        <input type="email" id="email" name="email">
+        <input type="email" id="email" name="email" value="{{ $correoRegistro ?? '' }}">
 
         <br><br>
 
@@ -50,6 +50,38 @@
         <button type="submit">{{ lang('InterfazAula.crearCuenta') }}</button>
 
     </form>
+
+    <script>
+    const nombreRegistro = document.getElementById('name');
+    const correoRegistro = document.getElementById('email');
+    const formularioRegistro = nombreRegistro.form;
+
+    const claveNombre = 'registroNombreAula';
+    const claveCorreo = 'registroCorreoAula';
+
+    if (nombreRegistro.value === '') {
+        nombreRegistro.value = sessionStorage.getItem(claveNombre) || '';
+    }
+
+    if (correoRegistro.value === '') {
+        correoRegistro.value = sessionStorage.getItem(claveCorreo) || '';
+    }
+
+    function conservarRegistro() {
+        sessionStorage.setItem(claveNombre, nombreRegistro.value);
+        sessionStorage.setItem(claveCorreo, correoRegistro.value);
+    }
+
+    conservarRegistro();
+
+    nombreRegistro.addEventListener('input', conservarRegistro);
+    correoRegistro.addEventListener('input', conservarRegistro);
+
+    formularioRegistro.addEventListener('submit', function () {
+        sessionStorage.removeItem(claveNombre);
+        sessionStorage.removeItem(claveCorreo);
+    });
+</script>
 
 </body>
 </html>
