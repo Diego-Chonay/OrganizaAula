@@ -111,4 +111,8 @@ return [
     'correoActivacionAsunto' => 'Activa tu cuenta de OrganizaAula',
     'correoActivacionSaludo' => 'Hola',
     'correoActivacionInstruccion' => 'Para activar tu cuenta de OrganizaAula, abre el siguiente enlace:',
+    'ingresoCorreoObligatorio' => 'El correo electrónico es obligatorio.',
+    'ingresoCorreoInvalido' => 'Ingresa un correo electrónico válido.',
+    'ingresoContrasenaObligatoria' => 'La contraseña es obligatoria.',
+    'ingresoCredencialesInvalidas' => 'Correo o contraseña incorrectos, o cuenta pendiente de activación.',
     ];

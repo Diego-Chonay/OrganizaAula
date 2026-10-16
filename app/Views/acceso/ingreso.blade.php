@@ -36,7 +36,7 @@
         {!! csrf_field() !!}
 
         <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
-        <input type="email" id="email" name="email" required>
+       <input type="email" id="email" name="email" value="{{ $correoIngreso ?? '' }}" required>
 
         <br><br>
 
@@ -46,7 +46,7 @@
         <br><br>
 
         <label>
-            <input type="checkbox" name="remember" value="1">
+            <input type="checkbox" name="remember" value="1" {{ !empty($recordarIngreso) ? 'checked' : '' }}>
             {{ lang('InterfazAula.recordarme') }}
         </label>
 
@@ -59,6 +59,42 @@
         <button type="submit">{{ lang('InterfazAula.iniciarSesion') }}</button>
 
     </form>
+
+    <script>
+    const correoIngreso = document.getElementById('email');
+    const recordarIngreso = document.querySelector('input[name="remember"]');
+    const formularioIngreso = correoIngreso.form;
+
+    const claveCorreoIngreso = 'correoIngresoAula';
+    const claveRecordarIngreso = 'recordarIngresoAula';
+
+    if (correoIngreso.value === '') {
+        correoIngreso.value = sessionStorage.getItem(claveCorreoIngreso) || '';
+    }
+
+    if (!recordarIngreso.checked) {
+        recordarIngreso.checked =
+            sessionStorage.getItem(claveRecordarIngreso) === '1';
+    }
+
+    function conservarIngreso() {
+        sessionStorage.setItem(claveCorreoIngreso, correoIngreso.value);
+        sessionStorage.setItem(
+            claveRecordarIngreso,
+            recordarIngreso.checked ? '1' : '0'
+        );
+    }
+
+    conservarIngreso();
+
+    correoIngreso.addEventListener('input', conservarIngreso);
+    recordarIngreso.addEventListener('change', conservarIngreso);
+
+    formularioIngreso.addEventListener('submit', function () {
+        sessionStorage.removeItem(claveCorreoIngreso);
+        sessionStorage.removeItem(claveRecordarIngreso);
+    });
+</script>
 
 </body>
 </html>

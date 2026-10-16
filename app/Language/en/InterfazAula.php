@@ -111,4 +111,8 @@ return [
     'correoActivacionAsunto' => 'Activate your OrganizaAula account',
     'correoActivacionSaludo' => 'Hello',
     'correoActivacionInstruccion' => 'To activate your OrganizaAula account, open the following link:',
+    'ingresoCorreoObligatorio' => 'The email address is required.',
+    'ingresoCorreoInvalido' => 'Enter a valid email address.',
+    'ingresoContrasenaObligatoria' => 'The password is required.',
+    'ingresoCredencialesInvalidas' => 'Incorrect email or password, or account pending activation.',
 ];

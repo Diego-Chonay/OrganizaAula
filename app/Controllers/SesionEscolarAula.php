@@ -8,35 +8,46 @@ use App\Models\DatosUsuarioAula;
 class SesionEscolarAula extends BaseController
 {
     public function formularioIngreso()
-    {
-        $puenteVista = new PuenteVistaAula();
+{
+    $puenteVista = new PuenteVistaAula();
 
-        $datosVista = [
-            'titulo' => 'Iniciar sesión'
-        ];
+    $datosVista = [
+        'titulo' => lang('InterfazAula.iniciarSesion'),
+        'correoIngreso' => session('correoIngreso') ?? '',
+        'recordarIngreso' => session('recordarIngreso') === '1',
+        'errores' => session('erroresIngreso') ?? []
+    ];
 
-        return $puenteVista->mostrar('acceso.ingreso', $datosVista);
-    }
-
+    return $puenteVista->mostrar('acceso.ingreso', $datosVista);
+}
     public function validarIngreso()
     {
         $reglasIngreso = [
-            'email' => 'required|valid_email',
-            'password' => 'required'
-        ];
+    'email' => 'required|valid_email',
+    'password' => 'required'
+];
 
-        $puenteVista = new PuenteVistaAula();
+$mensajesIngreso = [
+    'email' => [
+        'required' => lang('InterfazAula.ingresoCorreoObligatorio'),
+        'valid_email' => lang('InterfazAula.ingresoCorreoInvalido')
+    ],
+    'password' => [
+        'required' => lang('InterfazAula.ingresoContrasenaObligatoria')
+    ]
+];
 
-        if (!$this->validate($reglasIngreso)) {
-            return $puenteVista->mostrar('acceso.ingreso', [
-                'titulo' => 'Iniciar sesión',
-                'errores' => $this->validator->getErrors()
-            ]);
-        }
+$correo = strtolower(trim((string) $this->request->getPost('email')));
+$contrasena = (string) $this->request->getPost('password');
+$recordarIngreso = $this->request->getPost('remember') === '1';
 
-        $correo = strtolower(trim((string) $this->request->getPost('email')));
-        $contrasena = (string) $this->request->getPost('password');
-
+if (!$this->validate($reglasIngreso, $mensajesIngreso)) {
+    return redirect()
+        ->to('/ingreso')
+        ->with('correoIngreso', $correo)
+        ->with('recordarIngreso', $recordarIngreso ? '1' : '0')
+        ->with('erroresIngreso', $this->validator->getErrors());
+}
         $modeloUsuarios = new DatosUsuarioAula();
 
         $usuario = $modeloUsuarios
@@ -44,17 +55,18 @@ class SesionEscolarAula extends BaseController
             ->first();
 
         if (
-            !$usuario ||
-            !password_verify($contrasena, $usuario['password']) ||
-            (int) $usuario['active'] !== 1
-        ) {
-            return $puenteVista->mostrar('acceso.ingreso', [
-                'titulo' => 'Iniciar sesión',
-                'errores' => [
-                    'Correo o contraseña incorrectos, o cuenta pendiente de activación.'
-                ]
-            ]);
-        }
+    !$usuario ||
+    !password_verify($contrasena, $usuario['password']) ||
+    (int) $usuario['active'] !== 1
+) {
+    return redirect()
+        ->to('/ingreso')
+        ->with('correoIngreso', $correo)
+        ->with('recordarIngreso', $recordarIngreso ? '1' : '0')
+        ->with('erroresIngreso', [
+            lang('InterfazAula.ingresoCredencialesInvalidas')
+        ]);
+}
 
         session()->regenerate(true);
 
