@@ -1,26 +1,33 @@
 <nav>
-    <a href="/">Inicio</a>
+    <a href="/">{{ lang('InterfazAula.inicio') }}</a>
 
     @if (session()->get('autenticado') === true)
 
-        | <a href="/perfil">Mi perfil</a>
-        | <a href="/tareas">Tareas</a>
+        | <a href="/perfil">{{ lang('InterfazAula.perfil') }}</a>
+        | <a href="/tareas">{{ lang('InterfazAula.tareas') }}</a>
 
         @if ((int) session()->get('es_administrador') === 1)
-            | <a href="/usuarios">Usuarios</a>
+            | <a href="/usuarios">{{ lang('InterfazAula.usuarios') }}</a>
         @endif
 
-        | Hola, {{ session()->get('usuario_nombre') }}
+        | {{ lang('InterfazAula.hola') }}, {{ session()->get('usuario_nombre') }}
 
         <form action="/salir" method="post" style="display: inline;">
             {!! csrf_field() !!}
-            <button type="submit">Cerrar sesión</button>
+            <button type="submit">{{ lang('InterfazAula.cerrarSesion') }}</button>
         </form>
 
     @else
 
-        | <a href="/ingreso">Iniciar sesión</a>
-        | <a href="/registro">Registrarse</a>
+        | <a href="/ingreso">{{ lang('InterfazAula.iniciarSesion') }}</a>
+        | <a href="/registro">{{ lang('InterfazAula.registrarse') }}</a>
 
     @endif
+
+    <form action="/idioma/cambiar" method="post" style="display: inline;">
+        {!! csrf_field() !!}
+
+        <button type="submit" name="idioma" value="es">Español</button>
+        <button type="submit" name="idioma" value="en">English</button>
+    </form>
 </nav>

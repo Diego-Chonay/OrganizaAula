@@ -38,3 +38,4 @@ $routes->get('/tareas/(:num)', 'TareasEscolaresAula::verTarea/$1');
 $routes->get('/tareas/(:num)/editar', 'TareasEscolaresAula::formularioEditarTarea/$1');
 $routes->post('/tareas/(:num)/guardar', 'TareasEscolaresAula::guardarEdicionTarea/$1');
 $routes->post('/tareas/(:num)/eliminar', 'TareasEscolaresAula::eliminarTarea/$1');
+$routes->post('/idioma/cambiar', 'IdiomaEscolarAula::cambiar');

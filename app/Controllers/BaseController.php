@@ -38,6 +38,10 @@ abstract class BaseController extends Controller
 
         // Caution: Do not edit this line.
         parent::initController($request, $response, $logger);
+
+        $idiomaAula = session()->get('idioma_aula') === 'en' ? 'en' : 'es';
+
+        service('language')->setLocale($idiomaAula);
                 if (session()->get('autenticado') === true) {
             return;
         }
