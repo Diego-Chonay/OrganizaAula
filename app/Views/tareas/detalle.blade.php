@@ -1,46 +1,61 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.informacionTarea') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.informacionTarea') }}</h1>
 
     @if (session('mensajeTareas'))
-    <p>{{ session('mensajeTareas') }}</p>
-@endif
+        <p>{{ session('mensajeTareas') }}</p>
+    @endif
 
     <p><strong>ID:</strong> {{ $tarea['id'] }}</p>
 
-    <p><strong>Descripción:</strong> {{ $tarea['description'] }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.descripcion') }}:</strong>
+        {{ $tarea['description'] }}
+    </p>
 
-    <p><strong>Fecha de creación:</strong> {{ $tarea['created_at'] }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.fechaCreacion') }}:</strong>
+        {{ $tarea['created_at'] }}
+    </p>
 
-    <p><strong>Última modificación:</strong> {{ $tarea['updated_at'] }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.ultimaModificacion') }}:</strong>
+        {{ $tarea['updated_at'] }}
+    </p>
 
     @if ($esProfesor)
-    <a href="/tareas/{{ $tarea['id'] }}/editar">Editar tarea</a>
 
-    <br><br>
+        <a href="/tareas/{{ $tarea['id'] }}/editar">
+            {{ lang('InterfazAula.editarTarea') }}
+        </a>
 
-    <form action="/tareas/{{ $tarea['id'] }}/eliminar" method="post"
-          onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">
+        <br><br>
 
-        {!! csrf_field() !!}
+        <form action="/tareas/{{ $tarea['id'] }}/eliminar" method="post"
+              onsubmit="return confirm('{{ lang('InterfazAula.confirmarEliminarTarea') }}');">
 
-        <button type="submit">Eliminar tarea</button>
+            {!! csrf_field() !!}
 
-    </form>
+            <button type="submit">
+                {{ lang('InterfazAula.eliminarTarea') }}
+            </button>
 
-    <br>
-@endif
+        </form>
 
-    <a href="/tareas">Volver al listado</a>
+        <br>
+
+    @endif
+
+   <a href="/tareas">{{ lang('InterfazAula.volverListaTareas') }}</a>
 
 </body>
 </html>

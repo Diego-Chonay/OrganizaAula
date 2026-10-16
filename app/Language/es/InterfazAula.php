@@ -66,4 +66,17 @@ return [
     'usuarioActivo' => 'Usuario activo',
     'guardarUsuario' => 'Guardar usuario',
     'contrasenasOpcionales' => 'Deja las contraseñas vacías si no deseas cambiarlas.',
-];
+    'tituloTareas' => 'Tareas escolares',
+    'nuevaTarea' => 'Nueva tarea',
+    'informacionTarea' => 'Información de la tarea',
+    'editarTarea' => 'Editar tarea',
+    'descripcion' => 'Descripción',
+    'buscarTarea' => 'Buscar tarea',
+    'buscarPlaceholder' => 'Escribe una palabra clave',
+    'sinTareas' => 'Todavía no hay tareas registradas.',
+    'sinResultadosTareas' => 'No se encontraron tareas con esa palabra.',
+    'eliminarTarea' => 'Eliminar tarea',
+    'confirmarEliminarTarea' => '¿Estás seguro de que deseas eliminar esta tarea?',
+    'guardarTarea' => 'Guardar tarea',
+    'volverListaTareas' => 'Volver al listado de tareas',
+    ];
