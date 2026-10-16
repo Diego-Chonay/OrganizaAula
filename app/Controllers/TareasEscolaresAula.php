@@ -42,7 +42,7 @@ class TareasEscolaresAula extends BaseController
         $puenteVista = new PuenteVistaAula();
 
         return $puenteVista->mostrar('tareas.lista', [
-            'titulo' => 'Tareas escolares',
+            'titulo' => lang('InterfazAula.tituloTareas'),
             'tareas' => $tareas,
             'esProfesor' => $usuario['academic_role'] === 'teacher'
         ]);
@@ -68,14 +68,17 @@ class TareasEscolaresAula extends BaseController
     if ($usuario['academic_role'] !== 'teacher') {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('Solo los profesores pueden crear tareas.');
+            ->setBody(lang('InterfazAula.permisoCrearTarea'));
     }
 
     $puenteVista = new PuenteVistaAula();
 
     return $puenteVista->mostrar('tareas.nueva', [
-        'titulo' => 'Nueva tarea'
-    ]);
+    'titulo' => lang('InterfazAula.nuevaTarea'),
+    'descripcion' => session('descripcion') ?? '',
+    'errores' => session('errores') ?? []
+]);
+
 }
 
     public function guardarNuevaTarea()
@@ -98,7 +101,7 @@ class TareasEscolaresAula extends BaseController
     if ($usuario['academic_role'] !== 'teacher') {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('Solo los profesores pueden crear tareas.');
+            ->setBody(lang('InterfazAula.permisoCrearTarea'));
     }
 
     $descripcion = trim((string) $this->request->getPost('description'));
@@ -107,15 +110,21 @@ class TareasEscolaresAula extends BaseController
         'description' => 'required|max_length[255]'
     ];
 
+    $mensajes = [
+    'description' => [
+        'required' => lang('InterfazAula.descripcionObligatoria'),
+        'max_length' => lang('InterfazAula.descripcionMuyLarga')
+    ]
+];
+
     $puenteVista = new PuenteVistaAula();
 
-    if (!$this->validateData(['description' => $descripcion], $reglas)) {
-        return $puenteVista->mostrar('tareas.nueva', [
-            'titulo' => 'Nueva tarea',
-            'descripcion' => $descripcion,
-            'errores' => $this->validator->getErrors()
-        ]);
-    }
+    if (!$this->validateData(['description' => $descripcion], $reglas, $mensajes)) {
+    return redirect()
+        ->to('/tareas/nueva')
+        ->with('descripcion', $descripcion)
+        ->with('errores', $this->validator->getErrors());
+}
 
     $modeloTareas = new DatosTareaAula();
 
@@ -125,16 +134,15 @@ class TareasEscolaresAula extends BaseController
     ]);
 
     if ($resultado === false) {
-        return $puenteVista->mostrar('tareas.nueva', [
-            'titulo' => 'Nueva tarea',
-            'descripcion' => $descripcion,
-            'errores' => ['No fue posible guardar la tarea.']
-        ]);
-    }
+    return redirect()
+        ->to('/tareas/nueva')
+        ->with('descripcion', $descripcion)
+        ->with('errores', [lang('InterfazAula.errorGuardarTarea')]);
+}
 
     return redirect()
         ->to('/tareas')
-        ->with('mensajeTareas', 'La tarea se registró correctamente.');
+        ->with('mensajeTareas', lang('InterfazAula.tareaRegistrada'));
 }
 
     public function verTarea(int $id)
@@ -162,13 +170,13 @@ class TareasEscolaresAula extends BaseController
     if (!$tarea) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('La tarea solicitada no existe.');
+            ->setBody(lang('InterfazAula.tareaNoExiste'));
     }
 
     $puenteVista = new PuenteVistaAula();
 
     return $puenteVista->mostrar('tareas.detalle', [
-    'titulo' => 'Información de la tarea',
+    'titulo' => lang('InterfazAula.informacionTarea'),
     'tarea' => $tarea,
     'esProfesor' => $usuario['academic_role'] === 'teacher'
 ]);
@@ -195,7 +203,7 @@ class TareasEscolaresAula extends BaseController
     if ($usuario['academic_role'] !== 'teacher') {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('Solo los profesores pueden editar tareas.');
+            ->setBody(lang('InterfazAula.permisoEditarTarea'));
     }
 
     $modeloTareas = new DatosTareaAula();
@@ -205,15 +213,22 @@ class TareasEscolaresAula extends BaseController
     if (!$tarea) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('La tarea solicitada no existe.');
+            ->setBody(lang('InterfazAula.tareaNoExiste'));
     }
 
-    $puenteVista = new PuenteVistaAula();
+    $descripcionTemporal = session('descripcionEdicion');
 
-    return $puenteVista->mostrar('tareas.editar', [
-        'titulo' => 'Editar tarea',
-        'tarea' => $tarea
-    ]);
+if ($descripcionTemporal !== null) {
+    $tarea['description'] = $descripcionTemporal;
+}
+
+$puenteVista = new PuenteVistaAula();
+
+return $puenteVista->mostrar('tareas.editar', [
+    'titulo' => lang('InterfazAula.editarTarea'),
+    'tarea' => $tarea,
+    'errores' => session('erroresEdicion') ?? []
+]);
 }
 
     public function guardarEdicionTarea(int $id)
@@ -236,7 +251,7 @@ class TareasEscolaresAula extends BaseController
     if ($usuario['academic_role'] !== 'teacher') {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('Solo los profesores pueden editar tareas.');
+            ->setBody(lang('InterfazAula.permisoEditarTarea'));
     }
 
     $modeloTareas = new DatosTareaAula();
@@ -246,7 +261,7 @@ class TareasEscolaresAula extends BaseController
     if (!$tarea) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('La tarea solicitada no existe.');
+            ->setBody(lang('InterfazAula.tareaNoExiste'));
     }
 
     $descripcion = trim((string) $this->request->getPost('description'));
@@ -257,33 +272,34 @@ class TareasEscolaresAula extends BaseController
         'description' => 'required|max_length[255]'
     ];
 
-    if (!$this->validateData(['description' => $descripcion], $reglas)) {
-        $tarea['description'] = $descripcion;
+    $mensajes = [
+    'description' => [
+        'required' => lang('InterfazAula.descripcionObligatoria'),
+        'max_length' => lang('InterfazAula.descripcionMuyLarga')
+    ]
+];
 
-        return $puenteVista->mostrar('tareas.editar', [
-            'titulo' => 'Editar tarea',
-            'tarea' => $tarea,
-            'errores' => $this->validator->getErrors()
-        ]);
-    }
+    if (!$this->validateData(['description' => $descripcion], $reglas, $mensajes)) {
+    return redirect()
+        ->to('/tareas/' . $id . '/editar')
+        ->with('descripcionEdicion', $descripcion)
+        ->with('erroresEdicion', $this->validator->getErrors());
+}
 
     $resultado = $modeloTareas->update($id, [
         'description' => $descripcion
     ]);
 
     if ($resultado === false) {
-        $tarea['description'] = $descripcion;
-
-        return $puenteVista->mostrar('tareas.editar', [
-            'titulo' => 'Editar tarea',
-            'tarea' => $tarea,
-            'errores' => ['No fue posible actualizar la tarea.']
-        ]);
-    }
+    return redirect()
+        ->to('/tareas/' . $id . '/editar')
+        ->with('descripcionEdicion', $descripcion)
+        ->with('erroresEdicion', [lang('InterfazAula.errorActualizarTarea')]);
+}
 
     return redirect()
         ->to('/tareas/' . $id)
-        ->with('mensajeTareas', 'La tarea se actualizó correctamente.');
+        ->with('mensajeTareas', lang('InterfazAula.tareaActualizada'));
 }
 
     public function eliminarTarea(int $id)
@@ -307,7 +323,7 @@ class TareasEscolaresAula extends BaseController
     if ($usuario['academic_role'] !== 'teacher') {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('Solo los profesores pueden eliminar tareas.');
+            ->setBody(lang('InterfazAula.permisoEliminarTarea'));
     }
 
     $modeloTareas = new DatosTareaAula();
@@ -317,7 +333,7 @@ class TareasEscolaresAula extends BaseController
     if (!$tarea) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('La tarea solicitada no existe.');
+            ->setBody(lang('InterfazAula.tareaNoExiste'));
     }
 
     $resultado = $modeloTareas->delete($id);
@@ -325,12 +341,12 @@ class TareasEscolaresAula extends BaseController
     if ($resultado === false) {
         return redirect()
             ->to('/tareas/' . $id)
-            ->with('mensajeTareas', 'No fue posible eliminar la tarea.');
+            ->with('mensajeTareas', lang('InterfazAula.errorEliminarTarea'));
     }
 
     return redirect()
         ->to('/tareas')
-        ->with('mensajeTareas', 'La tarea se eliminó correctamente.');
+        ->with('mensajeTareas', lang('InterfazAula.tareaEliminada'));
 }
 
 }
