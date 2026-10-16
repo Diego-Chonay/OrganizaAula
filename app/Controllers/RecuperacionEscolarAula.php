@@ -7,22 +7,24 @@ use App\Libraries\PuenteVistaAula;
 class RecuperacionEscolarAula extends BaseController
 {
     public function formularioRecuperacion()
-    {
-        $puenteVista = new PuenteVistaAula();
+{
+    $puenteVista = new PuenteVistaAula();
 
-        $datosVista = [
-            'titulo' => 'Recuperar contraseña'
-        ];
+    $datosVista = [
+        'titulo' => lang('InterfazAula.tituloRecuperacion'),
+        'correoRecuperacion' => session('correoRecuperacion') ?? '',
+        'errores' => session('erroresRecuperacion') ?? []
+    ];
 
-        return $puenteVista->mostrar('acceso.recuperar', $datosVista);
-    }
+    return $puenteVista->mostrar('acceso.recuperar', $datosVista);
+}
 
         public function formularioRestablecimiento(string $llave)
     {
         if (strlen($llave) !== 64 || !ctype_xdigit($llave)) {
             return redirect()
                 ->to('/recuperar')
-                ->with('mensajeRecuperacion', 'El enlace de recuperación no es válido.');
+                ->with('mensajeRecuperacion', lang('InterfazAula.recuperacionEnlaceInvalido'));
         }
 
         $modeloUsuarios = new \App\Models\DatosUsuarioAula();
@@ -39,31 +41,37 @@ class RecuperacionEscolarAula extends BaseController
         ) {
             return redirect()
                 ->to('/recuperar')
-                ->with('mensajeRecuperacion', 'El enlace de recuperación no es válido o ha vencido.');
+                ->with('mensajeRecuperacion', lang('InterfazAula.recuperacionEnlaceVencido'));
         }
 
         $puenteVista = new PuenteVistaAula();
 
         return $puenteVista->mostrar('acceso.restablecer', [
-            'titulo' => 'Restablecer contraseña',
-            'llave' => $llave
-        ]);
+    'titulo' => lang('InterfazAula.tituloRestablecimiento'),
+    'llave' => $llave,
+    'errores' => session('erroresRestablecimiento') ?? []
+]);
     }
 
         public function enviarRecuperacion()
     {
         $reglasRecuperacion = [
-            'email' => 'required|valid_email'
-        ];
+    'email' => 'required|valid_email'
+];
 
-        if (!$this->validate($reglasRecuperacion)) {
-            $puenteVista = new PuenteVistaAula();
+$mensajesRecuperacion = [
+    'email' => [
+        'required' => lang('InterfazAula.ingresoCorreoObligatorio'),
+        'valid_email' => lang('InterfazAula.ingresoCorreoInvalido')
+    ]
+];
 
-            return $puenteVista->mostrar('acceso.recuperar', [
-                'titulo' => 'Recuperar contraseña',
-                'errores' => $this->validator->getErrors()
-            ]);
-        }
+if (!$this->validate($reglasRecuperacion, $mensajesRecuperacion)) {
+    return redirect()
+        ->to('/recuperar')
+        ->with('correoRecuperacion', trim((string) $this->request->getPost('email')))
+        ->with('erroresRecuperacion', $this->validator->getErrors());
+}
 
         $correo = strtolower(trim((string) $this->request->getPost('email')));
 
@@ -74,7 +82,7 @@ class RecuperacionEscolarAula extends BaseController
             ->where('active', 1)
             ->first();
 
-        $mensaje = 'Si existe una cuenta activa con ese correo, recibirás instrucciones para recuperar tu contraseña.';
+        $mensaje = lang('InterfazAula.recuperacionMensajeGeneral');
 
         if ($usuario) {
             $llave = bin2hex(random_bytes(32));
@@ -87,14 +95,24 @@ class RecuperacionEscolarAula extends BaseController
             if ($actualizado) {
                 $enlace = site_url('recuperar/restablecer/' . $llave);
 
-                $contenido = "¡Hola, {$usuario['name']}!\n\n"
-    . "Recibimos una solicitud para cambiar la contraseña de tu cuenta en OrganizaAula.\n\n"
-    . "Para continuar, ingresa desde el siguiente enlace:\n\n"
+                $contenido = sprintf(
+    lang('InterfazAula.correoRecuperacionSaludo'),
+    $usuario['name']
+)
+    . "\n\n"
+    . lang('InterfazAula.correoRecuperacionSolicitud')
+    . "\n\n"
+    . lang('InterfazAula.correoRecuperacionInstruccion')
+    . "\n\n"
     . $enlace
-    . "\n\nEste enlace estará disponible durante 15 minutos y dejará de funcionar después de utilizarlo.\n\n"
-    . "Si no solicitaste este cambio, puedes ignorar el mensaje y continuar utilizando tu contraseña actual.\n\n"
-    . "Saludos,\n"
-    . "Equipo OrganizaAula";
+    . "\n\n"
+    . lang('InterfazAula.correoRecuperacionVigencia')
+    . "\n\n"
+    . lang('InterfazAula.correoRecuperacionAviso')
+    . "\n\n"
+    . lang('InterfazAula.correoRecuperacionDespedida')
+    . "\n"
+    . lang('InterfazAula.correoRecuperacionEquipo');
 
                 $configuracionCorreo = config('Email');
                 $correoRecuperacion = service('email');
@@ -105,7 +123,7 @@ class RecuperacionEscolarAula extends BaseController
                 );
 
                 $correoRecuperacion->setTo($usuario['email']);
-                $correoRecuperacion->setSubject('OrganizaAula | Solicitud de cambio de contraseña');
+                $correoRecuperacion->setSubject(lang('InterfazAula.correoRecuperacionAsunto'));
                 $correoRecuperacion->setMessage($contenido);
 
                 if (!$correoRecuperacion->send()) {
@@ -131,7 +149,7 @@ class RecuperacionEscolarAula extends BaseController
         if (strlen($llave) !== 64 || !ctype_xdigit($llave)) {
             return redirect()
                 ->to('/recuperar')
-                ->with('mensajeRecuperacion', 'El enlace de recuperación no es válido.');
+                ->with('mensajeRecuperacion', lang('InterfazAula.recuperacionEnlaceInvalido'));
         }
 
         $modeloUsuarios = new \App\Models\DatosUsuarioAula();
@@ -148,7 +166,7 @@ class RecuperacionEscolarAula extends BaseController
         ) {
             return redirect()
                 ->to('/recuperar')
-                ->with('mensajeRecuperacion', 'El enlace de recuperación no es válido o ha vencido.');
+                ->with('mensajeRecuperacion', lang('InterfazAula.recuperacionEnlaceVencido'));
         }
 
         $reglasContrasena = [
@@ -156,15 +174,22 @@ class RecuperacionEscolarAula extends BaseController
             'password_repeat' => 'required|matches[password]'
         ];
 
-        if (!$this->validate($reglasContrasena)) {
-            $puenteVista = new PuenteVistaAula();
+        $mensajesContrasena = [
+    'password' => [
+        'required' => lang('InterfazAula.registroContrasenaObligatoria'),
+        'min_length' => lang('InterfazAula.registroContrasenaCorta')
+    ],
+    'password_repeat' => [
+        'required' => lang('InterfazAula.registroRepeticionObligatoria'),
+        'matches' => lang('InterfazAula.registroContrasenasDistintas')
+    ]
+];
 
-            return $puenteVista->mostrar('acceso.restablecer', [
-                'titulo' => 'Restablecer contraseña',
-                'llave' => $llave,
-                'errores' => $this->validator->getErrors()
-            ]);
-        }
+        if (!$this->validate($reglasContrasena, $mensajesContrasena)) {
+    return redirect()
+        ->to('/recuperar/restablecer/' . $llave)
+        ->with('erroresRestablecimiento', $this->validator->getErrors());
+}
 
         $resultado = $modeloUsuarios->update($usuario['id'], [
             'password' => password_hash(
@@ -180,12 +205,12 @@ class RecuperacionEscolarAula extends BaseController
         if ($resultado === false) {
             return redirect()
                 ->to('/recuperar')
-                ->with('mensajeRecuperacion', 'No se pudo actualizar la contraseña.');
+                ->with('mensajeRecuperacion', lang('InterfazAula.recuperacionErrorActualizar'));
         }
 
         return redirect()
             ->to('/ingreso')
-            ->with('mensajeRestablecimiento', 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.');
+            ->with('mensajeRestablecimiento', lang('InterfazAula.recuperacionActualizada'));
     }
 
 }

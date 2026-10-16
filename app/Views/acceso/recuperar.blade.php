@@ -30,7 +30,7 @@
         {!! csrf_field() !!}
 
         <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" value="{{ $correoRecuperacion ?? '' }}" required>
 
         <br><br>
 
@@ -41,6 +41,35 @@
     <br>
 
     <a href="/ingreso">{{ lang('InterfazAula.volverIngreso') }}</a>
+
+    <script>
+    const correoRecuperacion = document.getElementById('email');
+    const formularioRecuperacion = correoRecuperacion.form;
+    const claveCorreoRecuperacion = 'correoRecuperacionAula';
+
+    if (correoRecuperacion.value === '') {
+        correoRecuperacion.value =
+            sessionStorage.getItem(claveCorreoRecuperacion) || '';
+    }
+
+    function conservarCorreoRecuperacion() {
+        sessionStorage.setItem(
+            claveCorreoRecuperacion,
+            correoRecuperacion.value
+        );
+    }
+
+    conservarCorreoRecuperacion();
+
+    correoRecuperacion.addEventListener(
+        'input',
+        conservarCorreoRecuperacion
+    );
+
+    formularioRecuperacion.addEventListener('submit', function () {
+        sessionStorage.removeItem(claveCorreoRecuperacion);
+    });
+</script>
 
 </body>
 </html>
