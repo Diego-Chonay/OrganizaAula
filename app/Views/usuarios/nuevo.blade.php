@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.nuevoUsuario') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.nuevoUsuario') }}</h1>
 
     @if (!empty($errores))
         <ul>
@@ -23,51 +23,51 @@
 
         {!! csrf_field() !!}
 
-        <label for="name">Nombre:</label>
+        <label for="name">{{ lang('InterfazAula.nombre') }}:</label>
         <input type="text" id="name" name="name" required>
 
         <br><br>
 
-        <label for="email">Correo electrónico:</label>
+        <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
         <input type="email" id="email" name="email" required>
 
         <br><br>
 
-        <label for="password">Contraseña:</label>
+        <label for="password">{{ lang('InterfazAula.contrasena') }}:</label>
         <input type="password" id="password" name="password" required>
 
         <br><br>
 
-        <label for="password_repeat">Repetir contraseña:</label>
+        <label for="password_repeat">{{ lang('InterfazAula.repetirContrasena') }}:</label>
         <input type="password" id="password_repeat" name="password_repeat" required>
 
         <br><br>
 
-        <label for="academic_role">Rol académico:</label>
+        <label for="academic_role">{{ lang('InterfazAula.rolAcademico') }}:</label>
         <select id="academic_role" name="academic_role">
-            <option value="student">Estudiante</option>
-            <option value="teacher">Profesor</option>
+            <option value="student">{{ lang('InterfazAula.estudiante') }}</option>
+            <option value="teacher">{{ lang('InterfazAula.profesor') }}</option>
         </select>
 
         <br><br>
 
         <label>
             <input type="checkbox" name="active" value="1" checked>
-            Usuario activo
+            {{ lang('InterfazAula.usuarioActivo') }}
         </label>
 
         <br><br>
 
         <label>
             <input type="checkbox" name="administrator" value="1">
-            Administrador
+            {{ lang('InterfazAula.administrador') }}
         </label>
 
         <br><br>
 
-        <button type="submit">Guardar usuario</button>
+        <button type="submit">{{ lang('InterfazAula.guardarUsuario') }}</button>
 
-        <a href="/usuarios">Cancelar</a>
+        <a href="/usuarios">{{ lang('InterfazAula.cancelar') }}</a>
 
     </form>
 

@@ -1,48 +1,71 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.informacionUsuario') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.informacionUsuario') }}</h1>
 
     @if (session('mensajeUsuarios'))
-    <p>{{ session('mensajeUsuarios') }}</p>
-@endif
+        <p>{{ session('mensajeUsuarios') }}</p>
+    @endif
 
-    <p><strong>Nombre:</strong> {{ $usuario['name'] }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.nombre') }}:</strong>
+        {{ $usuario['name'] }}
+    </p>
 
-    <p><strong>Correo electrónico:</strong> {{ $usuario['email'] }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.correoElectronico') }}:</strong>
+        {{ $usuario['email'] }}
+    </p>
 
-    <p><strong>Activo:</strong> {{ (int) $usuario['active'] === 1 ? 'Sí' : 'No' }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.activo') }}:</strong>
+        {{ (int) $usuario['active'] === 1 ? lang('InterfazAula.si') : lang('InterfazAula.no') }}
+    </p>
 
-    <p><strong>Administrador:</strong> {{ (int) $usuario['administrator'] === 1 ? 'Sí' : 'No' }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.administrador') }}:</strong>
+        {{ (int) $usuario['administrator'] === 1 ? lang('InterfazAula.si') : lang('InterfazAula.no') }}
+    </p>
 
-    <p><strong>Fecha de creación:</strong> {{ $usuario['created_at'] }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.fechaCreacion') }}:</strong>
+        {{ $usuario['created_at'] }}
+    </p>
 
-    <p><strong>Última modificación:</strong> {{ $usuario['updated_at'] }}</p>
+    <p>
+        <strong>{{ lang('InterfazAula.ultimaModificacion') }}:</strong>
+        {{ $usuario['updated_at'] }}
+    </p>
 
-    <a href="/usuarios/{{ $usuario['id'] }}/editar">Editar usuario</a>
+    <a href="/usuarios/{{ $usuario['id'] }}/editar">
+        {{ lang('InterfazAula.editarUsuario') }}
+    </a>
 
     @if ((int) $usuario['active'] === 1)
-    <form action="/usuarios/{{ $usuario['id'] }}/desactivar" method="post"
-          onsubmit="return confirm('¿Deseas desactivar este usuario? No se eliminará de la base de datos.');">
+        <form action="/usuarios/{{ $usuario['id'] }}/desactivar"
+              method="post"
+              onsubmit="return confirm('{{ lang('InterfazAula.confirmacionDesactivarUsuario') }}');">
 
-        {!! csrf_field() !!}
+            {!! csrf_field() !!}
 
-        <button type="submit">Eliminar usuario</button>
+            <button type="submit">
+                {{ lang('InterfazAula.eliminarUsuario') }}
+            </button>
 
-    </form>
-@endif
+        </form>
+    @endif
 
-<br><br>
+    <br><br>
 
-    <a href="/usuarios">Volver al listado</a>
+    <a href="/usuarios">{{ lang('InterfazAula.volverListado') }}</a>
 
 </body>
 </html>
