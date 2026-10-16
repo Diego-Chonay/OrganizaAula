@@ -11,6 +11,14 @@
 
     <h1>{{ lang('InterfazAula.cambiarImagenPerfil') }}</h1>
 
+    @if (!empty($errores))
+    <ul>
+        @foreach ($errores as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+@endif
+
     <form action="/perfil/imagen/guardar" method="post" enctype="multipart/form-data">
 
         {!! csrf_field() !!}

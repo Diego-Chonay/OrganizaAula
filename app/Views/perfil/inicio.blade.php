@@ -49,5 +49,9 @@
 
     <a href="/perfil/contrasena">{{ lang('InterfazAula.cambiarContrasena') }}</a>
 
+    <script>
+    sessionStorage.removeItem('borradorPerfilAula:{{ (int) session('usuario_id') }}');
+</script>
+
 </body>
 </html>

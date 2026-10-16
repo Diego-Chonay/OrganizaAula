@@ -88,7 +88,7 @@ class PerfilEscolarAula extends BaseController
 
             return redirect()
                 ->to('/perfil/confirmar')
-                ->with('errorPerfil', 'La contraseña ingresada es incorrecta.');
+                ->with('errorPerfil', lang('InterfazAula.perfilConfirmacionIncorrecta'));
         }
 
         session()->set([
@@ -127,10 +127,11 @@ class PerfilEscolarAula extends BaseController
         $puenteVista = new PuenteVistaAula();
 
         return $puenteVista->mostrar('perfil.editar', [
-            'titulo' => 'Editar perfil',
-            'nombre' => $usuario['name'],
-            'correo' => $usuario['email']
-        ]);
+    'titulo' => lang('InterfazAula.editarPerfil'),
+    'nombre' => session('nombrePerfilTemporal') ?? $usuario['name'],
+    'correo' => session('correoPerfilTemporal') ?? $usuario['email'],
+    'errores' => session('erroresPerfil') ?? []
+]);
     }
 
         public function guardarPerfil()
@@ -164,6 +165,19 @@ class PerfilEscolarAula extends BaseController
             'email' => 'required|valid_email|max_length[150]'
         ];
 
+        $mensajesPerfil = [
+    'name' => [
+        'required' => lang('InterfazAula.registroNombreObligatorio'),
+        'min_length' => lang('InterfazAula.registroNombreCorto'),
+        'max_length' => lang('InterfazAula.registroNombreLargo')
+    ],
+    'email' => [
+        'required' => lang('InterfazAula.registroCorreoObligatorio'),
+        'valid_email' => lang('InterfazAula.registroCorreoInvalido'),
+        'max_length' => lang('InterfazAula.perfilCorreoLargo')
+    ]
+];
+
         $datosVista = [
             'titulo' => 'Editar perfil',
             'nombre' => $nombre,
@@ -173,12 +187,15 @@ class PerfilEscolarAula extends BaseController
         $puenteVista = new PuenteVistaAula();
 
         if (!$this->validateData([
-            'name' => $nombre,
-            'email' => $correo
-        ], $reglas)) {
-            $datosVista['errores'] = $this->validator->getErrors();
-            return $puenteVista->mostrar('perfil.editar', $datosVista);
-        }
+    'name' => $nombre,
+    'email' => $correo
+], $reglas, $mensajesPerfil)) {
+    return redirect()
+        ->to('/perfil/editar')
+        ->with('nombrePerfilTemporal', $nombre)
+        ->with('correoPerfilTemporal', $correo)
+        ->with('erroresPerfil', $this->validator->getErrors());
+}
 
         $correoExistente = $modeloUsuarios
             ->where('email', $correo)
@@ -199,12 +216,14 @@ class PerfilEscolarAula extends BaseController
         ]);
 
         if ($resultado === false) {
-            $datosVista['errores'] = [
-                'No fue posible guardar los cambios.'
-            ];
-
-            return $puenteVista->mostrar('perfil.editar', $datosVista);
-        }
+    return redirect()
+        ->to('/perfil/editar')
+        ->with('nombrePerfilTemporal', $nombre)
+        ->with('correoPerfilTemporal', $correo)
+        ->with('erroresPerfil', [
+            lang('InterfazAula.perfilErrorGuardar')
+        ]);
+}
 
         session()->set('usuario_nombre', $nombre);
         session()->remove('edicion_usuario_id');
@@ -212,7 +231,7 @@ class PerfilEscolarAula extends BaseController
 
         return redirect()
             ->to('/perfil')
-            ->with('mensajePerfil', 'Tus datos se actualizaron correctamente.');
+            ->with('mensajePerfil', lang('InterfazAula.perfilDatosActualizados'));
     }
 
         public function formularioContrasena()
@@ -236,8 +255,9 @@ class PerfilEscolarAula extends BaseController
         $puenteVista = new PuenteVistaAula();
 
         return $puenteVista->mostrar('perfil.contrasena', [
-            'titulo' => 'Cambiar contraseña'
-        ]);
+    'titulo' => lang('InterfazAula.cambiarContrasena'),
+    'errores' => session('erroresContrasena') ?? []
+]);
     }
 
         public function guardarContrasena()
@@ -263,24 +283,38 @@ class PerfilEscolarAula extends BaseController
             'password_repeat' => 'required|matches[password_new]'
         ];
 
+        $mensajesContrasena = [
+    'password_current' => [
+        'required' => lang('InterfazAula.perfilContrasenaActualObligatoria')
+    ],
+    'password_new' => [
+        'required' => lang('InterfazAula.registroContrasenaObligatoria'),
+        'min_length' => lang('InterfazAula.registroContrasenaCorta')
+    ],
+    'password_repeat' => [
+        'required' => lang('InterfazAula.registroRepeticionObligatoria'),
+        'matches' => lang('InterfazAula.registroContrasenasDistintas')
+    ]
+];
+
         $puenteVista = new PuenteVistaAula();
 
-        if (!$this->validate($reglas)) {
-            return $puenteVista->mostrar('perfil.contrasena', [
-                'titulo' => 'Cambiar contraseña',
-                'errores' => $this->validator->getErrors()
-            ]);
-        }
+        if (!$this->validate($reglas, $mensajesContrasena)) {
+    return redirect()
+        ->to('/perfil/contrasena')
+        ->with('erroresContrasena', $this->validator->getErrors());
+}
 
         $contrasenaActual = (string) $this->request->getPost('password_current');
         $contrasenaNueva = (string) $this->request->getPost('password_new');
 
         if (!password_verify($contrasenaActual, $usuario['password'])) {
-            return $puenteVista->mostrar('perfil.contrasena', [
-                'titulo' => 'Cambiar contraseña',
-                'errores' => ['La contraseña actual es incorrecta.']
-            ]);
-        }
+    return redirect()
+        ->to('/perfil/contrasena')
+        ->with('erroresContrasena', [
+            lang('InterfazAula.perfilContrasenaActualIncorrecta')
+        ]);
+}
 
         $resultado = $modeloUsuarios->update($usuario['id'], [
             'password' => password_hash($contrasenaNueva, PASSWORD_DEFAULT),
@@ -289,18 +323,19 @@ class PerfilEscolarAula extends BaseController
         ]);
 
         if ($resultado === false) {
-            return $puenteVista->mostrar('perfil.contrasena', [
-                'titulo' => 'Cambiar contraseña',
-                'errores' => ['No fue posible actualizar la contraseña.']
-            ]);
-        }
+    return redirect()
+        ->to('/perfil/contrasena')
+        ->with('erroresContrasena', [
+            lang('InterfazAula.perfilErrorActualizarContrasena')
+        ]);
+}
 
         session()->remove('edicion_usuario_id');
         session()->remove('edicion_permitida_hasta');
 
         return redirect()
             ->to('/perfil')
-            ->with('mensajePerfil', 'Tu contraseña se actualizó correctamente.');
+            ->with('mensajePerfil', lang('InterfazAula.perfilContrasenaActualizada'));
     }
 
     public function formularioImagen()
@@ -323,8 +358,9 @@ class PerfilEscolarAula extends BaseController
     $puenteVista = new PuenteVistaAula();
 
     return $puenteVista->mostrar('perfil.imagen', [
-        'titulo' => 'Cambiar imagen de perfil'
-    ]);
+    'titulo' => lang('InterfazAula.cambiarImagenPerfil'),
+    'errores' => session('erroresImagen') ?? []
+]);
 }
 
     public function guardarImagen()
@@ -345,34 +381,34 @@ class PerfilEscolarAula extends BaseController
     }
 
     $reglas = [
-        'imagen' => [
-            'rules' => 'uploaded[imagen]|max_size[imagen,2048]|is_image[imagen]|mime_in[imagen,image/jpeg,image/png,image/webp]',
-            'errors' => [
-                'uploaded' => 'Debes seleccionar una fotografía.',
-                'max_size' => 'La fotografía no debe superar los 2 MB.',
-                'is_image' => 'El archivo seleccionado no es una imagen válida.',
-                'mime_in' => 'Solo se permiten imágenes JPG, PNG y WEBP.'
-            ]
+    'imagen' => [
+        'rules' => 'uploaded[imagen]|max_size[imagen,2048]|is_image[imagen]|mime_in[imagen,image/jpeg,image/png,image/webp]',
+        'errors' => [
+            'uploaded' => lang('InterfazAula.imagenObligatoria'),
+            'max_size' => lang('InterfazAula.imagenTamanoMaximo'),
+            'is_image' => lang('InterfazAula.imagenArchivoInvalido'),
+            'mime_in' => lang('InterfazAula.imagenFormatoInvalido')
         ]
-    ];
+    ]
+];
 
     $puenteVista = new PuenteVistaAula();
 
     if (!$this->validate($reglas)) {
-        return $puenteVista->mostrar('perfil.imagen', [
-            'titulo' => 'Cambiar imagen de perfil',
-            'errores' => $this->validator->getErrors()
-        ]);
-    }
+    return redirect()
+        ->to('/perfil/imagen')
+        ->with('erroresImagen', $this->validator->getErrors());
+}
 
     $archivo = $this->request->getFile('imagen');
 
     if (!$archivo || !$archivo->isValid() || $archivo->hasMoved()) {
-        return $puenteVista->mostrar('perfil.imagen', [
-            'titulo' => 'Cambiar imagen de perfil',
-            'errores' => ['No fue posible recibir la fotografía.']
+    return redirect()
+        ->to('/perfil/imagen')
+        ->with('erroresImagen', [
+            lang('InterfazAula.imagenErrorRecepcion')
         ]);
-    }
+}
 
     $extensiones = [
         'image/jpeg' => 'jpg',
@@ -382,45 +418,48 @@ class PerfilEscolarAula extends BaseController
 
     $tipo = $archivo->getMimeType();
 
-    if (!isset($extensiones[$tipo])) {
-        return $puenteVista->mostrar('perfil.imagen', [
-            'titulo' => 'Cambiar imagen de perfil',
-            'errores' => ['El formato de la fotografía no es válido.']
+if (!isset($extensiones[$tipo])) {
+    return redirect()
+        ->to('/perfil/imagen')
+        ->with('erroresImagen', [
+            lang('InterfazAula.imagenErrorFormato')
         ]);
-    }
+}
 
-    $carpeta = FCPATH . 'uploads/perfiles/';
+$carpeta = FCPATH . 'uploads/perfiles/';
 
-    if (!is_dir($carpeta) && !mkdir($carpeta, 0755, true) && !is_dir($carpeta)) {
-        return $puenteVista->mostrar('perfil.imagen', [
-            'titulo' => 'Cambiar imagen de perfil',
-            'errores' => ['No fue posible preparar la carpeta de fotografías.']
+if (!is_dir($carpeta) && !mkdir($carpeta, 0755, true) && !is_dir($carpeta)) {
+    return redirect()
+        ->to('/perfil/imagen')
+        ->with('erroresImagen', [
+            lang('InterfazAula.imagenErrorCarpeta')
         ]);
-    }
+}
 
-    $nombreImagen = bin2hex(random_bytes(16)) . '.' . $extensiones[$tipo];
-
+$nombreImagen = bin2hex(random_bytes(16)) . '.' . $extensiones[$tipo];
     try {
-        $archivo->move($carpeta, $nombreImagen);
-    } catch (\Exception $error) {
-        return $puenteVista->mostrar('perfil.imagen', [
-            'titulo' => 'Cambiar imagen de perfil',
-            'errores' => ['No fue posible guardar la fotografía.']
+    $archivo->move($carpeta, $nombreImagen);
+} catch (\Exception $error) {
+    return redirect()
+        ->to('/perfil/imagen')
+        ->with('erroresImagen', [
+            lang('InterfazAula.imagenErrorGuardar')
         ]);
-    }
+}
 
     $resultado = $modeloUsuarios->update($usuario['id'], [
         'profile_image' => $nombreImagen
     ]);
 
     if ($resultado === false) {
-        unlink($carpeta . $nombreImagen);
+    unlink($carpeta . $nombreImagen);
 
-        return $puenteVista->mostrar('perfil.imagen', [
-            'titulo' => 'Cambiar imagen de perfil',
-            'errores' => ['No fue posible actualizar la fotografía del perfil.']
+    return redirect()
+        ->to('/perfil/imagen')
+        ->with('erroresImagen', [
+            lang('InterfazAula.imagenErrorActualizar')
         ]);
-    }
+}
 
     if (
         !empty($usuario['profile_image']) &&
@@ -435,7 +474,7 @@ class PerfilEscolarAula extends BaseController
 
     return redirect()
         ->to('/perfil')
-        ->with('mensajePerfil', 'Tu fotografía se actualizó correctamente.');
+        ->with('mensajePerfil', lang('InterfazAula.imagenActualizada'));
 }
 
 public function eliminarImagen()
@@ -459,7 +498,7 @@ public function eliminarImagen()
     if (empty($usuario['profile_image'])) {
         return redirect()
             ->to('/perfil')
-            ->with('mensajePerfil', 'No tienes una fotografía para eliminar.');
+            ->with('mensajePerfil', lang('InterfazAula.imagenNoExiste'));
     }
 
     $nombreImagen = $usuario['profile_image'];
@@ -471,7 +510,7 @@ public function eliminarImagen()
     if ($resultado === false) {
         return redirect()
             ->to('/perfil')
-            ->with('mensajePerfil', 'No fue posible eliminar la fotografía.');
+            ->with('mensajePerfil', lang('InterfazAula.imagenErrorEliminar'));
     }
 
     if (preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $nombreImagen)) {
@@ -484,7 +523,7 @@ public function eliminarImagen()
 
     return redirect()
         ->to('/perfil')
-        ->with('mensajePerfil', 'Tu fotografía se eliminó correctamente.');
+        ->with('mensajePerfil', lang('InterfazAula.imagenEliminada'));
 }
 
 }

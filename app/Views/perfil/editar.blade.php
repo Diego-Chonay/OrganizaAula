@@ -39,5 +39,44 @@
 
     </form>
 
+    <script>
+    const nombrePerfil = document.getElementById('name');
+    const correoPerfil = document.getElementById('email');
+    const formularioPerfil = nombrePerfil.form;
+
+    const clavePerfil = 'borradorPerfilAula:' + {{ (int) session('usuario_id') }};
+
+    const borradorGuardado = sessionStorage.getItem(clavePerfil);
+
+    if (borradorGuardado !== null) {
+        const datosGuardados = JSON.parse(borradorGuardado);
+
+        nombrePerfil.value = datosGuardados.nombre;
+        correoPerfil.value = datosGuardados.correo;
+    }
+
+    function conservarDatosPerfil() {
+        const datosPerfil = {
+            nombre: nombrePerfil.value,
+            correo: correoPerfil.value
+        };
+
+        sessionStorage.setItem(clavePerfil, JSON.stringify(datosPerfil));
+    }
+
+    nombrePerfil.addEventListener('input', conservarDatosPerfil);
+    correoPerfil.addEventListener('input', conservarDatosPerfil);
+
+    formularioPerfil.addEventListener('submit', conservarDatosPerfil);
+
+    const cancelarPerfil = formularioPerfil.querySelector('a[href="/perfil"]');
+
+    if (cancelarPerfil) {
+        cancelarPerfil.addEventListener('click', function () {
+            sessionStorage.removeItem(clavePerfil);
+        });
+    }
+</script>
+
 </body>
 </html>
