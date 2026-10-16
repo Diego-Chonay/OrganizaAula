@@ -10,5 +10,22 @@ return [
     'iniciarSesion' => 'Iniciar sesión',
     'registrarse' => 'Registrarse',
     'idioma' => 'Idioma',
-    'aplicarIdioma' => 'Cambiar idioma'
+    'aplicarIdioma' => 'Cambiar idioma',
+    'bienvenida' => 'Bienvenido al organizador de tareas escolares',
+    'correoElectronico' => 'Correo electrónico',
+    'contrasena' => 'Contraseña',
+    'recordarme' => 'Recordarme',
+    'olvidasteContrasena' => '¿Olvidaste tu contraseña?',
+    'nombre' => 'Nombre',
+    'repetirContrasena' => 'Repetir contraseña',
+    'crearCuenta' => 'Crear cuenta',
+    'tituloRegistro' => 'Registro de usuario',
+    'tituloRecuperacion' => 'Recuperar contraseña',
+    'indicacionRecuperacion' => 'Introduce tu correo electrónico para recuperar tu contraseña.',
+    'enviarRecuperacion' => 'Enviar enlace de recuperación',
+    'volverIngreso' => 'Volver al inicio de sesión',
+    'tituloRestablecimiento' => 'Restablecer contraseña',
+    'nuevaContrasena' => 'Nueva contraseña',
+    'restablecerContrasena' => 'Restablecer contraseña',
+
 ];

@@ -10,5 +10,22 @@ return [
     'iniciarSesion' => 'Log In',
     'registrarse' => 'Register',
     'idioma' => 'Language',
-    'aplicarIdioma' => 'Change Language'
+    'aplicarIdioma' => 'Change Language',
+    'bienvenida' => 'Welcome to the school task organizer',
+    'correoElectronico' => 'Email Address',
+    'contrasena' => 'Password',
+    'recordarme' => 'Remember Me',
+    'olvidasteContrasena' => 'Forgot Your Password?',
+    'nombre' => 'Name',
+    'repetirContrasena' => 'Repeat Password',
+    'crearCuenta' => 'Create Account',
+    'tituloRegistro' => 'User Registration',
+    'tituloRecuperacion' => 'Recover Password',
+    'indicacionRecuperacion' => 'Enter your email address to recover your password.',
+    'enviarRecuperacion' => 'Send Recovery Link',
+    'volverIngreso' => 'Back to Log In',
+    'tituloRestablecimiento' => 'Reset Password',
+    'nuevaContrasena' => 'New Password',
+    'restablecerContrasena' => 'Reset Password',
+
 ];

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.tituloRecuperacion') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.tituloRecuperacion') }}</h1>
 
-    <p>Introduce tu correo electrónico para recuperar tu contraseña.</p>
+    <p>{{ lang('InterfazAula.indicacionRecuperacion') }}</p>
 
     @if (!empty($errores))
         <ul>
@@ -29,18 +29,18 @@
 
         {!! csrf_field() !!}
 
-        <label for="email">Correo electrónico:</label>
+        <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
         <input type="email" id="email" name="email" required>
 
         <br><br>
 
-        <button type="submit">Enviar enlace de recuperación</button>
+        <button type="submit">{{ lang('InterfazAula.enviarRecuperacion') }}</button>
 
     </form>
 
     <br>
 
-    <a href="/ingreso">Volver al inicio de sesión</a>
+    <a href="/ingreso">{{ lang('InterfazAula.volverIngreso') }}</a>
 
 </body>
 </html>

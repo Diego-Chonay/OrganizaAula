@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.tituloRestablecimiento') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.tituloRestablecimiento') }}</h1>
 
     @if (!empty($errores))
         <ul>
@@ -25,17 +25,17 @@
 
         <input type="hidden" name="llave" value="{{ $llave }}">
 
-        <label for="password">Nueva contraseña:</label>
+        <label for="password">{{ lang('InterfazAula.nuevaContrasena') }}:</label>
         <input type="password" id="password" name="password" required>
 
         <br><br>
 
-        <label for="password_repeat">Repetir contraseña:</label>
+        <label for="password_repeat">{{ lang('InterfazAula.repetirContrasena') }}:</label>
         <input type="password" id="password_repeat" name="password_repeat" required>
 
         <br><br>
 
-        <button type="submit">Restablecer contraseña</button>
+        <button type="submit">{{ lang('InterfazAula.restablecerContrasena') }}</button>
 
     </form>
 

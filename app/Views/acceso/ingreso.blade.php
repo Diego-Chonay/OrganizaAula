@@ -1,62 +1,62 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.iniciarSesion') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.iniciarSesion') }}</h1>
 
     @if (session('mensajeRestablecimiento'))
-    <p>{{ session('mensajeRestablecimiento') }}</p>
-@endif
+        <p>{{ session('mensajeRestablecimiento') }}</p>
+    @endif
 
     @if (session('mensajeActivacion'))
-    <p>{{ session('mensajeActivacion') }}</p>
-@endif
+        <p>{{ session('mensajeActivacion') }}</p>
+    @endif
 
-@if (session('errorActivacion'))
-    <p>{{ session('errorActivacion') }}</p>
-@endif
+    @if (session('errorActivacion'))
+        <p>{{ session('errorActivacion') }}</p>
+    @endif
 
     @if (!empty($errores))
-    <ul>
-        @foreach ($errores as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-@endif
+        <ul>
+            @foreach ($errores as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    @endif
 
     <form action="/ingreso/validar" method="post">
 
-        <?= csrf_field() ?>
+        {!! csrf_field() !!}
 
-        <label for="email">Correo electrónico:</label>
+        <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
         <input type="email" id="email" name="email" required>
 
         <br><br>
 
-        <label for="password">Contraseña:</label>
+        <label for="password">{{ lang('InterfazAula.contrasena') }}:</label>
         <input type="password" id="password" name="password" required>
 
         <br><br>
 
         <label>
             <input type="checkbox" name="remember" value="1">
-            Recordarme
+            {{ lang('InterfazAula.recordarme') }}
         </label>
 
         <br><br>
 
-        <a href="/recuperar">¿Olvidaste tu contraseña?</a>
+        <a href="/recuperar">{{ lang('InterfazAula.olvidasteContrasena') }}</a>
 
         <br><br>
 
-        <button type="submit">Iniciar sesión</button>
+        <button type="submit">{{ lang('InterfazAula.iniciarSesion') }}</button>
 
     </form>
 
