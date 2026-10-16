@@ -1,59 +1,53 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
-
+    <title>{{ lang('InterfazAula.perfil') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.perfil') }}</h1>
 
     @if (session('mensajePerfil'))
-    <p>{{ session('mensajePerfil') }}</p>
-@endif
+        <p>{{ session('mensajePerfil') }}</p>
+    @endif
 
-@if (!empty($imagen))
-    <img src="{{ base_url('uploads/perfiles/' . $imagen) }}" alt="Imagen de perfil" width="140">
-@else
-    <div style="font-size: 70px;">👤</div>
-@endif
+    @if (!empty($imagen))
+        <img src="{{ base_url('uploads/perfiles/' . $imagen) }}"
+             alt="{{ lang('InterfazAula.imagenPerfil') }}" width="140">
+    @else
+        <div style="font-size: 70px;">👤</div>
+    @endif
 
-<br>
+    <br>
 
-<a href="/perfil/imagen">Cambiar imagen de perfil</a>
+    <a href="/perfil/imagen">{{ lang('InterfazAula.cambiarImagenPerfil') }}</a>
 
-@if (!empty($imagen))
-    <form action="/perfil/imagen/eliminar" method="post"
-          onsubmit="return confirm('¿Estás seguro de que deseas eliminar tu fotografía de perfil?');">
+    @if (!empty($imagen))
+        <form action="/perfil/imagen/eliminar" method="post"
+              onsubmit="return confirm('{{ lang('InterfazAula.confirmarEliminarImagen') }}');">
 
-        {!! csrf_field() !!}
+            {!! csrf_field() !!}
 
-        <button type="submit">Eliminar imagen de perfil</button>
+            <button type="submit">{{ lang('InterfazAula.eliminarImagenPerfil') }}</button>
 
-    </form>
-@endif
+        </form>
+    @endif
 
-<br><br>
+    <br><br>
 
-    <h3>Información personal</h3>
+    <h3>{{ lang('InterfazAula.informacionPersonal') }}</h3>
 
-    <p><strong>Nombre:</strong> {{ $nombre }}</p>
+    <p><strong>{{ lang('InterfazAula.nombre') }}:</strong> {{ $nombre }}</p>
 
-    <p><strong>Correo electrónico:</strong> {{ $correo }}</p>
+    <p><strong>{{ lang('InterfazAula.correoElectronico') }}:</strong> {{ $correo }}</p>
 
-    <a href="/perfil/confirmar">Editar perfil</a>
+    <a href="/perfil/confirmar">{{ lang('InterfazAula.editarPerfil') }}</a>
 
-    <a href="/perfil/contrasena">Cambiar contraseña</a>
-
-<br><br>
-
-<br><br>
-
-
+    <a href="/perfil/contrasena">{{ lang('InterfazAula.cambiarContrasena') }}</a>
 
 </body>
 </html>

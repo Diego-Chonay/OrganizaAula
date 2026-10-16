@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.cambiarContrasena') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.cambiarContrasena') }}</h1>
 
     @if (!empty($errores))
         <ul>
@@ -23,24 +23,24 @@
 
         {!! csrf_field() !!}
 
-        <label for="password_current">Contraseña actual:</label>
+        <label for="password_current">{{ lang('InterfazAula.contrasenaActual') }}:</label>
         <input type="password" id="password_current" name="password_current" required>
 
         <br><br>
 
-        <label for="password_new">Nueva contraseña:</label>
+        <label for="password_new">{{ lang('InterfazAula.nuevaContrasena') }}:</label>
         <input type="password" id="password_new" name="password_new" required>
 
         <br><br>
 
-        <label for="password_repeat">Repetir nueva contraseña:</label>
+        <label for="password_repeat">{{ lang('InterfazAula.repetirNuevaContrasena') }}:</label>
         <input type="password" id="password_repeat" name="password_repeat" required>
 
         <br><br>
 
-        <button type="submit">Guardar contraseña</button>
+        <button type="submit">{{ lang('InterfazAula.guardarContrasena') }}</button>
 
-        <a href="/perfil">Cancelar</a>
+        <a href="/perfil">{{ lang('InterfazAula.cancelar') }}</a>
 
     </form>
 

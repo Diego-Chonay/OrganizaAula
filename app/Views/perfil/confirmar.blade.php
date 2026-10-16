@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.confirmarPerfil') }}</title>
 </head>
 <body>
 
-    <h1>{{ $titulo }}</h1>
+    @include('componentes.navegacion')
 
-    <p>Ingresa tu contraseña actual para continuar con la edición de tu perfil.</p>
+    <h1>{{ lang('InterfazAula.confirmarPerfil') }}</h1>
+
+    <p>{{ lang('InterfazAula.indicacionConfirmacion') }}</p>
 
     @if (session('errorPerfil'))
         <p>{{ session('errorPerfil') }}</p>
@@ -19,14 +21,14 @@
 
         {!! csrf_field() !!}
 
-        <label for="password">Contraseña actual:</label>
+        <label for="password">{{ lang('InterfazAula.contrasenaActual') }}:</label>
         <input type="password" id="password" name="password" required>
 
         <br><br>
 
-        <button type="submit">Continuar</button>
+        <button type="submit">{{ lang('InterfazAula.continuar') }}</button>
 
-        <a href="/perfil">Cancelar</a>
+        <a href="/perfil">{{ lang('InterfazAula.cancelar') }}</a>
 
     </form>
 

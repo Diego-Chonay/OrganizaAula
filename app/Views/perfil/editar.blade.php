@@ -1,42 +1,41 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
-
+    <title>{{ lang('InterfazAula.editarPerfil') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.editarPerfil') }}</h1>
 
     @if (!empty($errores))
-    <ul>
-        @foreach ($errores as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-@endif
+        <ul>
+            @foreach ($errores as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    @endif
 
     <form action="/perfil/guardar" method="post">
 
         {!! csrf_field() !!}
 
-        <label for="name">Nombre:</label>
+        <label for="name">{{ lang('InterfazAula.nombre') }}:</label>
         <input type="text" id="name" name="name" value="{{ $nombre }}" required>
 
         <br><br>
 
-        <label for="email">Correo electrónico:</label>
+        <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
         <input type="email" id="email" name="email" value="{{ $correo }}" required>
 
         <br><br>
 
-        <button type="submit">Guardar cambios</button>
+        <button type="submit">{{ lang('InterfazAula.guardarCambios') }}</button>
 
-        <a href="/perfil">Cancelar</a>
+        <a href="/perfil">{{ lang('InterfazAula.cancelar') }}</a>
 
     </form>
 

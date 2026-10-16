@@ -1,28 +1,28 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ service('language')->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $titulo }}</title>
+    <title>{{ lang('InterfazAula.cambiarImagenPerfil') }}</title>
 </head>
 <body>
 
     @include('componentes.navegacion')
 
-    <h1>{{ $titulo }}</h1>
+    <h1>{{ lang('InterfazAula.cambiarImagenPerfil') }}</h1>
 
     <form action="/perfil/imagen/guardar" method="post" enctype="multipart/form-data">
 
         {!! csrf_field() !!}
 
-        <label for="imagen">Seleccionar fotografía:</label>
+        <label for="imagen">{{ lang('InterfazAula.seleccionarFotografia') }}:</label>
         <input type="file" id="imagen" name="imagen" accept="image/jpeg,image/png,image/webp" required>
 
-        <p>Formatos permitidos: JPG, PNG y WEBP. Tamaño máximo: 2 MB.</p>
+        <p>{{ lang('InterfazAula.formatosImagen') }}</p>
 
-        <button type="submit">Guardar imagen</button>
+        <button type="submit">{{ lang('InterfazAula.guardarImagen') }}</button>
 
-        <a href="/perfil">Cancelar</a>
+        <a href="/perfil">{{ lang('InterfazAula.cancelar') }}</a>
 
     </form>
 
