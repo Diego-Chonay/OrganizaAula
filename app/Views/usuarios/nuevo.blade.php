@@ -24,12 +24,12 @@
         {!! csrf_field() !!}
 
         <label for="name">{{ lang('InterfazAula.nombre') }}:</label>
-        <input type="text" id="name" name="name" required>
+        <input type="text" id="name" name="name" value="{{ $datosPrevios['name'] ?? '' }}" required>
 
         <br><br>
 
         <label for="email">{{ lang('InterfazAula.correoElectronico') }}:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" value="{{ $datosPrevios['email'] ?? '' }}" required>
 
         <br><br>
 
@@ -44,22 +44,30 @@
         <br><br>
 
         <label for="academic_role">{{ lang('InterfazAula.rolAcademico') }}:</label>
-        <select id="academic_role" name="academic_role">
-            <option value="student">{{ lang('InterfazAula.estudiante') }}</option>
-            <option value="teacher">{{ lang('InterfazAula.profesor') }}</option>
-        </select>
+
+<select id="academic_role" name="academic_role">
+    <option value="student" {{ ($datosPrevios['academic_role'] ?? 'student') === 'student' ? 'selected' : '' }}>
+        {{ lang('InterfazAula.estudiante') }}
+    </option>
+
+    <option value="teacher" {{ ($datosPrevios['academic_role'] ?? 'student') === 'teacher' ? 'selected' : '' }}>
+        {{ lang('InterfazAula.profesor') }}
+    </option>
+</select>
 
         <br><br>
 
         <label>
-            <input type="checkbox" name="active" value="1" checked>
+            <input type="checkbox" name="active" value="1"
+    {{ (int) ($datosPrevios['active'] ?? 1) === 1 ? 'checked' : '' }}>
             {{ lang('InterfazAula.usuarioActivo') }}
         </label>
 
         <br><br>
 
         <label>
-            <input type="checkbox" name="administrator" value="1">
+            <input type="checkbox" name="administrator" value="1"
+    {{ (int) ($datosPrevios['administrator'] ?? 0) === 1 ? 'checked' : '' }}>
             {{ lang('InterfazAula.administrador') }}
         </label>
 
@@ -72,7 +80,8 @@
     </form>
 
     <script>
-    const formularioUsuario = document.querySelector('form[action^="/usuarios/"]');
+    const formularioUsuario = document.querySelector('form[action="/usuarios/guardar"]');
+    const formularioIdioma = document.querySelector('form[action="/idioma/cambiar"]');
 
     const nombreUsuario = formularioUsuario.querySelector('[name="name"]');
     const correoUsuario = formularioUsuario.querySelector('[name="email"]');
@@ -80,47 +89,42 @@
     const activoUsuario = formularioUsuario.querySelector('[name="active"]');
     const administradorUsuario = formularioUsuario.querySelector('[name="administrator"]');
 
-    const claveBorrador = 'borradorUsuariosAula:{{ (int) session('usuario_id') }}:' + window.location.pathname;
+    const rutaUsuario = 'nuevo';
+    const identificadorUsuario = '{{ (int) session('usuario_id') }}';
 
-    const borradorGuardado = sessionStorage.getItem(claveBorrador);
+    const claveAnterior = 'borradorUsuariosAula:' + identificadorUsuario + ':' + rutaUsuario;
+    const claveIdioma = 'idiomaTemporalUsuariosAula:' + identificadorUsuario + ':' + rutaUsuario;
 
-    if (borradorGuardado !== null) {
-        const datosGuardados = JSON.parse(borradorGuardado);
+    sessionStorage.removeItem(claveAnterior);
 
-        nombreUsuario.value = datosGuardados.nombre;
-        correoUsuario.value = datosGuardados.correo;
-        rolUsuario.value = datosGuardados.rol;
-        activoUsuario.checked = datosGuardados.activo;
-        administradorUsuario.checked = datosGuardados.administrador;
+    const borrador = sessionStorage.getItem(claveIdioma);
+    sessionStorage.removeItem(claveIdioma);
+
+    if (borrador !== null) {
+        try {
+            const datos = JSON.parse(borrador);
+
+            nombreUsuario.value = datos.nombre;
+            correoUsuario.value = datos.correo;
+            rolUsuario.value = datos.rol;
+            activoUsuario.checked = datos.activo;
+            administradorUsuario.checked = datos.administrador;
+        } catch (error) {
+            sessionStorage.removeItem(claveIdioma);
+        }
     }
 
-    function conservarDatosUsuario() {
-        const datosUsuario = {
-            nombre: nombreUsuario.value,
-            correo: correoUsuario.value,
-            rol: rolUsuario.value,
-            activo: activoUsuario.checked,
-            administrador: administradorUsuario.checked
-        };
+    if (formularioIdioma) {
+        formularioIdioma.addEventListener('submit', function () {
+            const datos = {
+                nombre: nombreUsuario.value,
+                correo: correoUsuario.value,
+                rol: rolUsuario.value,
+                activo: activoUsuario.checked,
+                administrador: administradorUsuario.checked
+            };
 
-        sessionStorage.setItem(claveBorrador, JSON.stringify(datosUsuario));
-    }
-
-    nombreUsuario.addEventListener('input', conservarDatosUsuario);
-    correoUsuario.addEventListener('input', conservarDatosUsuario);
-    rolUsuario.addEventListener('change', conservarDatosUsuario);
-    activoUsuario.addEventListener('change', conservarDatosUsuario);
-    administradorUsuario.addEventListener('change', conservarDatosUsuario);
-
-    formularioUsuario.addEventListener('submit', function () {
-        sessionStorage.removeItem(claveBorrador);
-    });
-
-    const cancelarUsuario = formularioUsuario.querySelector('a');
-
-    if (cancelarUsuario) {
-        cancelarUsuario.addEventListener('click', function () {
-            sessionStorage.removeItem(claveBorrador);
+            sessionStorage.setItem(claveIdioma, JSON.stringify(datos));
         });
     }
 </script>

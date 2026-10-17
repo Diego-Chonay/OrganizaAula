@@ -80,7 +80,8 @@
     </form>
 
     <script>
-    const formularioUsuario = document.querySelector('form[action^="/usuarios/"]');
+    const formularioUsuario = document.querySelector('form[action^="/usuarios/"][action$="/guardar"]');
+    const formularioIdioma = document.querySelector('form[action="/idioma/cambiar"]');
 
     const nombreUsuario = formularioUsuario.querySelector('[name="name"]');
     const correoUsuario = formularioUsuario.querySelector('[name="email"]');
@@ -88,50 +89,46 @@
     const activoUsuario = formularioUsuario.querySelector('[name="active"]');
     const administradorUsuario = formularioUsuario.querySelector('[name="administrator"]');
 
-    const claveBorrador = 'borradorUsuariosAula:{{ (int) session('usuario_id') }}:' + window.location.pathname;
+    const rutaUsuario = 'editar:{{ (int) $usuario['id'] }}';
+    const identificadorUsuario = '{{ (int) session('usuario_id') }}';
 
-    const borradorGuardado = sessionStorage.getItem(claveBorrador);
+    const claveAnterior = 'borradorUsuariosAula:' + identificadorUsuario + ':' + rutaUsuario;
+    const claveIdioma = 'idiomaTemporalUsuariosAula:' + identificadorUsuario + ':' + rutaUsuario;
 
-    if (borradorGuardado !== null) {
-        const datosGuardados = JSON.parse(borradorGuardado);
+    sessionStorage.removeItem(claveAnterior);
 
-        nombreUsuario.value = datosGuardados.nombre;
-        correoUsuario.value = datosGuardados.correo;
-        rolUsuario.value = datosGuardados.rol;
-        activoUsuario.checked = datosGuardados.activo;
-        administradorUsuario.checked = datosGuardados.administrador;
+    const borrador = sessionStorage.getItem(claveIdioma);
+    sessionStorage.removeItem(claveIdioma);
+
+    if (borrador !== null) {
+        try {
+            const datos = JSON.parse(borrador);
+
+            nombreUsuario.value = datos.nombre;
+            correoUsuario.value = datos.correo;
+            rolUsuario.value = datos.rol;
+            activoUsuario.checked = datos.activo;
+            administradorUsuario.checked = datos.administrador;
+        } catch (error) {
+            sessionStorage.removeItem(claveIdioma);
+        }
     }
 
-    function conservarDatosUsuario() {
-        const datosUsuario = {
-            nombre: nombreUsuario.value,
-            correo: correoUsuario.value,
-            rol: rolUsuario.value,
-            activo: activoUsuario.checked,
-            administrador: administradorUsuario.checked
-        };
+    if (formularioIdioma) {
+        formularioIdioma.addEventListener('submit', function () {
+            const datos = {
+                nombre: nombreUsuario.value,
+                correo: correoUsuario.value,
+                rol: rolUsuario.value,
+                activo: activoUsuario.checked,
+                administrador: administradorUsuario.checked
+            };
 
-        sessionStorage.setItem(claveBorrador, JSON.stringify(datosUsuario));
-    }
-
-    nombreUsuario.addEventListener('input', conservarDatosUsuario);
-    correoUsuario.addEventListener('input', conservarDatosUsuario);
-    rolUsuario.addEventListener('change', conservarDatosUsuario);
-    activoUsuario.addEventListener('change', conservarDatosUsuario);
-    administradorUsuario.addEventListener('change', conservarDatosUsuario);
-
-    formularioUsuario.addEventListener('submit', function () {
-        sessionStorage.removeItem(claveBorrador);
-    });
-
-    const cancelarUsuario = formularioUsuario.querySelector('a');
-
-    if (cancelarUsuario) {
-        cancelarUsuario.addEventListener('click', function () {
-            sessionStorage.removeItem(claveBorrador);
+            sessionStorage.setItem(claveIdioma, JSON.stringify(datos));
         });
     }
 </script>
+
 
 </body>
 </html>

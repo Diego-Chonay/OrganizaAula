@@ -26,7 +26,7 @@ class UsuariosEscolaresAula extends BaseController
         ) {
             return $this->response
                 ->setStatusCode(403)
-                ->setBody('No tienes permiso para administrar usuarios.');
+                ->setBody(lang('InterfazAula.usuariosPermisoAdministrar'));
         }
 
         $orden = $this->request->getGet('orden') === 'antiguos'
@@ -43,7 +43,7 @@ class UsuariosEscolaresAula extends BaseController
         $puenteVista = new PuenteVistaAula();
 
         return $puenteVista->mostrar('usuarios.lista', [
-            'titulo' => 'Administración de usuarios',
+            'titulo' => lang('InterfazAula.administracionUsuarios'),
             'usuarios' => $usuarios
         ]);
     }
@@ -67,7 +67,7 @@ class UsuariosEscolaresAula extends BaseController
     ) {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('No tienes permiso para administrar usuarios.');
+            ->setBody(lang('InterfazAula.usuariosPermisoAdministrar'));
     }
 
     $usuario = $modeloUsuarios->find($id);
@@ -75,13 +75,13 @@ class UsuariosEscolaresAula extends BaseController
     if (!$usuario) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('El usuario solicitado no existe.');
+            ->setBody(lang('InterfazAula.usuariosNoExiste'));
     }
 
     $puenteVista = new PuenteVistaAula();
 
     return $puenteVista->mostrar('usuarios.detalle', [
-        'titulo' => 'Información del usuario',
+        'titulo' => lang('InterfazAula.informacionUsuario'),
         'usuario' => $usuario
     ]);
 }
@@ -105,14 +105,16 @@ class UsuariosEscolaresAula extends BaseController
     ) {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('No tienes permiso para crear usuarios.');
+            ->setBody(lang('InterfazAula.usuariosPermisoCrear'));
     }
 
     $puenteVista = new PuenteVistaAula();
 
     return $puenteVista->mostrar('usuarios.nuevo', [
-        'titulo' => 'Nuevo usuario'
-    ]);
+    'titulo' => lang('InterfazAula.nuevoUsuario'),
+    'errores' => session('erroresUsuarioNuevo') ?? [],
+    'datosPrevios' => session('datosUsuarioNuevo') ?? []
+]);
 }
 
     public function guardarNuevoUsuario()
@@ -134,7 +136,7 @@ class UsuariosEscolaresAula extends BaseController
     ) {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('No tienes permiso para crear usuarios.');
+            ->setBody(lang('InterfazAula.usuariosPermisoCrear'));
     }
 
     $nombre = trim((string) $this->request->getPost('name'));
@@ -152,21 +154,59 @@ class UsuariosEscolaresAula extends BaseController
     ];
 
     $reglas = [
-        'name' => 'required|min_length[3]|max_length[100]',
-        'email' => 'required|valid_email|max_length[150]|is_unique[users.email]',
-        'password' => 'required|min_length[8]',
-        'password_repeat' => 'required|matches[password]',
-        'academic_role' => 'required|in_list[student,teacher]'
-    ];
-
+    'name' => [
+        'rules' => 'required|min_length[3]|max_length[100]',
+        'errors' => [
+            'required' => lang('InterfazAula.registroNombreObligatorio'),
+            'min_length' => lang('InterfazAula.registroNombreCorto'),
+            'max_length' => lang('InterfazAula.registroNombreLargo')
+        ]
+    ],
+    'email' => [
+        'rules' => 'required|valid_email|max_length[150]|is_unique[users.email]',
+        'errors' => [
+            'required' => lang('InterfazAula.registroCorreoObligatorio'),
+            'valid_email' => lang('InterfazAula.registroCorreoInvalido'),
+            'max_length' => lang('InterfazAula.perfilCorreoLargo'),
+            'is_unique' => lang('InterfazAula.registroCorreoExistente')
+        ]
+    ],
+    'password' => [
+        'rules' => 'required|min_length[8]',
+        'errors' => [
+            'required' => lang('InterfazAula.registroContrasenaObligatoria'),
+            'min_length' => lang('InterfazAula.registroContrasenaCorta')
+        ]
+    ],
+    'password_repeat' => [
+        'rules' => 'required|matches[password]',
+        'errors' => [
+            'required' => lang('InterfazAula.registroRepeticionObligatoria'),
+            'matches' => lang('InterfazAula.registroContrasenasDistintas')
+        ]
+    ],
+    'academic_role' => [
+        'rules' => 'required|in_list[student,teacher]',
+        'errors' => [
+            'required' => lang('InterfazAula.usuariosRolObligatorio'),
+            'in_list' => lang('InterfazAula.usuariosRolInvalido')
+        ]
+    ]
+];
     $puenteVista = new PuenteVistaAula();
 
     if (!$this->validateData($datos, $reglas)) {
-        return $puenteVista->mostrar('usuarios.nuevo', [
-            'titulo' => 'Nuevo usuario',
-            'errores' => $this->validator->getErrors()
+    return redirect()
+        ->to('/usuarios/nuevo')
+        ->with('erroresUsuarioNuevo', array_values($this->validator->getErrors()))
+        ->with('datosUsuarioNuevo', [
+            'name' => $nombre,
+            'email' => $correo,
+            'academic_role' => $rolAcademico,
+            'active' => $this->request->getPost('active') === '1' ? 1 : 0,
+            'administrator' => $this->request->getPost('administrator') === '1' ? 1 : 0
         ]);
-    }
+}
 
     $activo = $this->request->getPost('active') === '1' ? 1 : 0;
     $esAdministrador = $this->request->getPost('administrator') === '1' ? 1 : 0;
@@ -181,15 +221,23 @@ class UsuariosEscolaresAula extends BaseController
     ]);
 
     if ($resultado === false) {
-        return $puenteVista->mostrar('usuarios.nuevo', [
-            'titulo' => 'Nuevo usuario',
-            'errores' => ['No fue posible guardar el usuario.']
+    return redirect()
+        ->to('/usuarios/nuevo')
+        ->with('erroresUsuarioNuevo', [
+            lang('InterfazAula.usuariosErrorGuardar')
+        ])
+        ->with('datosUsuarioNuevo', [
+            'name' => $nombre,
+            'email' => $correo,
+            'academic_role' => $rolAcademico,
+            'active' => $activo,
+            'administrator' => $esAdministrador
         ]);
-    }
+}
 
     return redirect()
         ->to('/usuarios')
-        ->with('mensajeUsuarios', 'El usuario se registró correctamente.');
+        ->with('mensajeUsuarios', lang('InterfazAula.usuariosCreado'));
 }
 
 public function formularioEditarUsuario(int $id)
@@ -210,8 +258,8 @@ public function formularioEditarUsuario(int $id)
         (int) $administrador['administrator'] !== 1
     ) {
         return $this->response
-            ->setStatusCode(403)
-            ->setBody('No tienes permiso para editar usuarios.');
+    ->setStatusCode(403)
+    ->setBody(lang('InterfazAula.usuariosPermisoEditar'));
     }
 
     $usuario = $modeloUsuarios->find($id);
@@ -219,15 +267,19 @@ public function formularioEditarUsuario(int $id)
     if (!$usuario) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('El usuario solicitado no existe.');
+            ->setBody(lang('InterfazAula.usuariosNoExiste'));
     }
 
     $puenteVista = new PuenteVistaAula();
 
     return $puenteVista->mostrar('usuarios.editar', [
-        'titulo' => 'Editar usuario',
-        'usuario' => $usuario
-    ]);
+    'titulo' => lang('InterfazAula.editarUsuario'),
+    'usuario' => array_replace(
+        $usuario,
+        session('datosUsuarioEditar') ?? []
+    ),
+    'errores' => session('erroresUsuarioEditar') ?? []
+]);
 }
 
 public function guardarEdicionUsuario(int $id)
@@ -247,9 +299,9 @@ public function guardarEdicionUsuario(int $id)
         (int) $administrador['active'] !== 1 ||
         (int) $administrador['administrator'] !== 1
     ) {
-        return $this->response
-            ->setStatusCode(403)
-            ->setBody('No tienes permiso para editar usuarios.');
+       return $this->response
+    ->setStatusCode(403)
+    ->setBody(lang('InterfazAula.usuariosPermisoEditar'));
     }
 
     $usuario = $modeloUsuarios->find($id);
@@ -257,7 +309,7 @@ public function guardarEdicionUsuario(int $id)
     if (!$usuario) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('El usuario solicitado no existe.');
+            ->setBody(lang('InterfazAula.usuariosNoExiste'));
     }
 
     $nombre = trim((string) $this->request->getPost('name'));
@@ -276,17 +328,50 @@ public function guardarEdicionUsuario(int $id)
     ];
 
     $reglas = [
-        'name' => 'required|min_length[3]|max_length[100]',
-        'email' => 'required|valid_email|max_length[150]',
-        'academic_role' => 'required|in_list[student,teacher]'
-    ];
+    'name' => [
+        'rules' => 'required|min_length[3]|max_length[100]',
+        'errors' => [
+            'required' => lang('InterfazAula.registroNombreObligatorio'),
+            'min_length' => lang('InterfazAula.registroNombreCorto'),
+            'max_length' => lang('InterfazAula.registroNombreLargo')
+        ]
+    ],
+    'email' => [
+        'rules' => 'required|valid_email|max_length[150]',
+        'errors' => [
+            'required' => lang('InterfazAula.registroCorreoObligatorio'),
+            'valid_email' => lang('InterfazAula.registroCorreoInvalido'),
+            'max_length' => lang('InterfazAula.perfilCorreoLargo')
+        ]
+    ],
+    'academic_role' => [
+        'rules' => 'required|in_list[student,teacher]',
+        'errors' => [
+            'required' => lang('InterfazAula.usuariosRolObligatorio'),
+            'in_list' => lang('InterfazAula.usuariosRolInvalido')
+        ]
+    ]
+];
 
     if ($contrasena !== '' || $repetirContrasena !== '') {
         $datosEntrada['password'] = $contrasena;
         $datosEntrada['password_repeat'] = $repetirContrasena;
 
-        $reglas['password'] = 'required|min_length[8]';
-        $reglas['password_repeat'] = 'required|matches[password]';
+        $reglas['password'] = [
+    'rules' => 'required|min_length[8]',
+    'errors' => [
+        'required' => lang('InterfazAula.registroContrasenaObligatoria'),
+        'min_length' => lang('InterfazAula.registroContrasenaCorta')
+    ]
+];
+
+$reglas['password_repeat'] = [
+    'rules' => 'required|matches[password]',
+    'errors' => [
+        'required' => lang('InterfazAula.registroRepeticionObligatoria'),
+        'matches' => lang('InterfazAula.registroContrasenasDistintas')
+    ]
+];
     }
 
     $errores = [];
@@ -301,14 +386,14 @@ public function guardarEdicionUsuario(int $id)
         ->first();
 
     if ($correoExistente) {
-        $errores[] = 'El correo electrónico ya está registrado.';
+        $errores[] = lang('InterfazAula.usuariosCorreoDuplicado');
     }
 
     if (
         $id === (int) $administrador['id'] &&
         ($activo !== 1 || $esAdministrador !== 1)
     ) {
-        $errores[] = 'No puedes desactivar tu propia cuenta ni quitarte los permisos de administrador.';
+        $errores[] = lang('InterfazAula.usuariosNoAutodesactivar');
     }
 
     $usuario['name'] = $nombre;
@@ -320,12 +405,17 @@ public function guardarEdicionUsuario(int $id)
     $puenteVista = new PuenteVistaAula();
 
     if (!empty($errores)) {
-        return $puenteVista->mostrar('usuarios.editar', [
-            'titulo' => 'Editar usuario',
-            'usuario' => $usuario,
-            'errores' => $errores
+    return redirect()
+        ->to('/usuarios/' . $id . '/editar')
+        ->with('erroresUsuarioEditar', $errores)
+        ->with('datosUsuarioEditar', [
+            'name' => $nombre,
+            'email' => $correo,
+            'academic_role' => $rolAcademico,
+            'active' => $activo,
+            'administrator' => $esAdministrador
         ]);
-    }
+}
 
     $cambios = [
         'name' => $nombre,
@@ -344,12 +434,19 @@ public function guardarEdicionUsuario(int $id)
     $resultado = $modeloUsuarios->update($id, $cambios);
 
     if ($resultado === false) {
-        return $puenteVista->mostrar('usuarios.editar', [
-            'titulo' => 'Editar usuario',
-            'usuario' => $usuario,
-            'errores' => ['No fue posible actualizar el usuario.']
+    return redirect()
+        ->to('/usuarios/' . $id . '/editar')
+        ->with('erroresUsuarioEditar', [
+            lang('InterfazAula.usuariosErrorActualizar')
+        ])
+        ->with('datosUsuarioEditar', [
+            'name' => $nombre,
+            'email' => $correo,
+            'academic_role' => $rolAcademico,
+            'active' => $activo,
+            'administrator' => $esAdministrador
         ]);
-    }
+}
 
     if ($id === (int) $administrador['id']) {
         session()->set([
@@ -361,7 +458,7 @@ public function guardarEdicionUsuario(int $id)
 
     return redirect()
         ->to('/usuarios/' . $id)
-        ->with('mensajeUsuarios', 'Los datos del usuario se actualizaron correctamente.');
+        ->with('mensajeUsuarios', lang('InterfazAula.usuariosActualizado'));
 }
 
 public function desactivarUsuario(int $id)
@@ -383,13 +480,13 @@ public function desactivarUsuario(int $id)
     ) {
         return $this->response
             ->setStatusCode(403)
-            ->setBody('No tienes permiso para desactivar usuarios.');
+            ->setBody(lang('InterfazAula.usuariosPermisoDesactivar'));
     }
 
     if ($id === (int) $administrador['id']) {
         return redirect()
             ->to('/usuarios/' . $id)
-            ->with('mensajeUsuarios', 'No puedes desactivar tu propia cuenta.');
+            ->with('mensajeUsuarios', lang('InterfazAula.usuariosNoDesactivarPropiaCuenta'));
     }
 
     $usuario = $modeloUsuarios->find($id);
@@ -397,13 +494,13 @@ public function desactivarUsuario(int $id)
     if (!$usuario) {
         return $this->response
             ->setStatusCode(404)
-            ->setBody('El usuario solicitado no existe.');
+            ->setBody(lang('InterfazAula.usuariosNoExiste'));
     }
 
     if ((int) $usuario['active'] === 0) {
         return redirect()
             ->to('/usuarios/' . $id)
-            ->with('mensajeUsuarios', 'Este usuario ya se encuentra inactivo.');
+            ->with('mensajeUsuarios', lang('InterfazAula.usuariosYaInactivo'));
     }
 
     $resultado = $modeloUsuarios->update($id, [
@@ -415,12 +512,12 @@ public function desactivarUsuario(int $id)
     if ($resultado === false) {
         return redirect()
             ->to('/usuarios/' . $id)
-            ->with('mensajeUsuarios', 'No fue posible desactivar el usuario.');
+            ->with('mensajeUsuarios', lang('InterfazAula.usuariosErrorDesactivar'));
     }
 
     return redirect()
         ->to('/usuarios/' . $id)
-        ->with('mensajeUsuarios', 'El usuario se desactivó correctamente.');
+        ->with('mensajeUsuarios', lang('InterfazAula.usuariosDesactivado'));
 }
 
 }
