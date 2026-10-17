@@ -259,3 +259,46 @@ body > form[action="/perfil/imagen/eliminar"] button {
     font-size: 0.9rem;
     line-height: 1.4;
 }
+td .btn-aula {
+    padding: 6px 11px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: normal;
+    text-align: left;
+    max-width: 100%;
+}
+
+.acciones-aula {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 24px;
+}
+
+.acciones-aula .btn-aula {
+    min-height: 36px;
+}
+form[action^="/usuarios/"][action$="/desactivar"] {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    max-width: none;
+    margin: 8px 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+form[action^="/usuarios/"][action$="/desactivar"] button {
+    margin: 0;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #215f7d;
+    color: #ffffff;
+    border: 1px solid #42616a;
+    border-radius: 6px;
+}

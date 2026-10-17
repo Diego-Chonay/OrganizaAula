@@ -46,7 +46,7 @@
         {{ $usuario['updated_at'] }}
     </p>
 
-    <a href="/usuarios/{{ $usuario['id'] }}/editar">
+    <a href="/usuarios/{{ $usuario['id'] }}/editar" class="btn-aula">
         {{ lang('InterfazAula.editarUsuario') }}
     </a>
 
@@ -62,11 +62,10 @@
             </button>
 
         </form>
-    @endif
-
+@endif
     <br><br>
 
-    <a href="/usuarios">{{ lang('InterfazAula.volverListado') }}</a>
+    <a href="/usuarios" class="btn-aula">{{ lang('InterfazAula.volverListado') }}</a>
 
 </body>
 </html>

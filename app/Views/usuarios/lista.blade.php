@@ -16,16 +16,21 @@
         <p>{{ session('mensajeUsuarios') }}</p>
     @endif
 
-    <a href="/usuarios/nuevo">{{ lang('InterfazAula.nuevoUsuario') }}</a>
+    <div class="acciones-aula">
 
-    <br><br>
+    <a href="/usuarios/nuevo" class="btn-aula">
+        {{ lang('InterfazAula.nuevoUsuario') }}
+    </a>
 
-    <p>
-        <a href="/usuarios?orden=nuevos">{{ lang('InterfazAula.masRecientes') }}</a>
-        |
-        <a href="/usuarios?orden=antiguos">{{ lang('InterfazAula.masAntiguos') }}</a>
-    </p>
+    <a href="/usuarios?orden=nuevos" class="btn-aula">
+        {{ lang('InterfazAula.masRecientes') }}
+    </a>
 
+    <a href="/usuarios?orden=antiguos" class="btn-aula">
+        {{ lang('InterfazAula.masAntiguos') }}
+    </a>
+
+</div>
     <table border="1" cellpadding="8">
         <thead>
             <tr>
@@ -40,9 +45,9 @@
             @foreach ($usuarios as $usuario)
                 <tr>
                     <td>
-                        <a href="/usuarios/{{ $usuario['id'] }}">
-                            {{ $usuario['name'] }}
-                        </a>
+                        <a href="/usuarios/{{ $usuario['id'] }}" class="btn-aula">
+    {{ $usuario['name'] }}
+</a>
                     </td>
 
                     <td>{{ $usuario['email'] }}</td>

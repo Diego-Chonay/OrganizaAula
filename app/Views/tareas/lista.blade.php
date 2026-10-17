@@ -16,18 +16,23 @@
         <p>{{ session('mensajeTareas') }}</p>
     @endif
 
+    <div class="acciones-aula">
+
     @if ($esProfesor)
-        <p>
-            <a href="/tareas/nueva">{{ lang('InterfazAula.nuevaTarea') }}</a>
-        </p>
+        <a href="/tareas/nueva" class="btn-aula">
+            {{ lang('InterfazAula.nuevaTarea') }}
+        </a>
     @endif
 
-    <p>
-        <a href="/tareas?orden=nuevos">{{ lang('InterfazAula.masRecientes') }}</a>
-        |
-        <a href="/tareas?orden=antiguos">{{ lang('InterfazAula.masAntiguos') }}</a>
-    </p>
+    <a href="/tareas?orden=nuevos" class="btn-aula">
+        {{ lang('InterfazAula.masRecientes') }}
+    </a>
 
+    <a href="/tareas?orden=antiguos" class="btn-aula">
+        {{ lang('InterfazAula.masAntiguos') }}
+    </a>
+
+</div>
     <p>
         <label for="buscarTareas">{{ lang('InterfazAula.buscarTarea') }}:</label>
 
@@ -54,9 +59,9 @@
                 @foreach ($tareas as $tarea)
                     <tr>
                         <td>
-                            <a href="/tareas/{{ $tarea['id'] }}">
-                                {{ $tarea['description'] }}
-                            </a>
+                            <a href="/tareas/{{ $tarea['id'] }}" class="btn-aula">
+    {{ $tarea['description'] }}
+</a>
                         </td>
 
                         <td>{{ $tarea['created_at'] }}</td>
