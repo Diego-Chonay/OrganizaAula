@@ -71,5 +71,59 @@
 
     </form>
 
+    <script>
+    const formularioUsuario = document.querySelector('form[action^="/usuarios/"]');
+
+    const nombreUsuario = formularioUsuario.querySelector('[name="name"]');
+    const correoUsuario = formularioUsuario.querySelector('[name="email"]');
+    const rolUsuario = formularioUsuario.querySelector('[name="academic_role"]');
+    const activoUsuario = formularioUsuario.querySelector('[name="active"]');
+    const administradorUsuario = formularioUsuario.querySelector('[name="administrator"]');
+
+    const claveBorrador = 'borradorUsuariosAula:{{ (int) session('usuario_id') }}:' + window.location.pathname;
+
+    const borradorGuardado = sessionStorage.getItem(claveBorrador);
+
+    if (borradorGuardado !== null) {
+        const datosGuardados = JSON.parse(borradorGuardado);
+
+        nombreUsuario.value = datosGuardados.nombre;
+        correoUsuario.value = datosGuardados.correo;
+        rolUsuario.value = datosGuardados.rol;
+        activoUsuario.checked = datosGuardados.activo;
+        administradorUsuario.checked = datosGuardados.administrador;
+    }
+
+    function conservarDatosUsuario() {
+        const datosUsuario = {
+            nombre: nombreUsuario.value,
+            correo: correoUsuario.value,
+            rol: rolUsuario.value,
+            activo: activoUsuario.checked,
+            administrador: administradorUsuario.checked
+        };
+
+        sessionStorage.setItem(claveBorrador, JSON.stringify(datosUsuario));
+    }
+
+    nombreUsuario.addEventListener('input', conservarDatosUsuario);
+    correoUsuario.addEventListener('input', conservarDatosUsuario);
+    rolUsuario.addEventListener('change', conservarDatosUsuario);
+    activoUsuario.addEventListener('change', conservarDatosUsuario);
+    administradorUsuario.addEventListener('change', conservarDatosUsuario);
+
+    formularioUsuario.addEventListener('submit', function () {
+        sessionStorage.removeItem(claveBorrador);
+    });
+
+    const cancelarUsuario = formularioUsuario.querySelector('a');
+
+    if (cancelarUsuario) {
+        cancelarUsuario.addEventListener('click', function () {
+            sessionStorage.removeItem(claveBorrador);
+        });
+    }
+</script>
+
 </body>
 </html>
