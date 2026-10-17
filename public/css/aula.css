@@ -190,3 +190,72 @@ nav button {
     font-size: 0.82rem;
     font-weight: 600;
 }
+body > form[action="/perfil/imagen/eliminar"] {
+    display: inline-block;
+    width: auto;
+    max-width: none;
+    margin: 8px 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body > form[action="/perfil/imagen/eliminar"] button {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #215f7d;
+    color: #ffffff;
+    border: 1px solid #42616a;
+    border-radius: 6px;
+}
+.btn-aula {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #ffffff;
+    background-color: #215f7d;
+    border: 1px solid #42616a;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-aula:hover {
+    background-color: #3287af;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.acciones-aula {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0;
+}
+.acciones-aula form {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.acciones-aula .btn-aula {
+    margin: 0;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}

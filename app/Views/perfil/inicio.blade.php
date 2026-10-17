@@ -23,9 +23,11 @@
         <div style="font-size: 70px;">👤</div>
     @endif
 
-    <br>
+    <div class="acciones-aula">
 
-    <a href="/perfil/imagen">{{ lang('InterfazAula.cambiarImagenPerfil') }}</a>
+    <a href="/perfil/imagen" class="btn-aula">
+        {{ lang('InterfazAula.cambiarImagenPerfil') }}
+    </a>
 
     @if (!empty($imagen))
         <form action="/perfil/imagen/eliminar" method="post"
@@ -33,12 +35,14 @@
 
             {!! csrf_field() !!}
 
-            <button type="submit">{{ lang('InterfazAula.eliminarImagenPerfil') }}</button>
+            <button type="submit" class="btn-aula">
+                {{ lang('InterfazAula.eliminarImagenPerfil') }}
+            </button>
 
         </form>
     @endif
 
-    <br><br>
+</div>
 
     <h3>{{ lang('InterfazAula.informacionPersonal') }}</h3>
 
@@ -46,9 +50,17 @@
 
     <p><strong>{{ lang('InterfazAula.correoElectronico') }}:</strong> {{ $correo }}</p>
 
-    <a href="/perfil/confirmar">{{ lang('InterfazAula.editarPerfil') }}</a>
+    <div class="acciones-aula">
 
-    <a href="/perfil/contrasena">{{ lang('InterfazAula.cambiarContrasena') }}</a>
+    <a href="/perfil/confirmar" class="btn-aula">
+        {{ lang('InterfazAula.editarPerfil') }}
+    </a>
+
+    <a href="/perfil/contrasena" class="btn-aula">
+        {{ lang('InterfazAula.cambiarContrasena') }}
+    </a>
+
+</div>
 
     <script>
     sessionStorage.removeItem('borradorPerfilAula:{{ (int) session('usuario_id') }}');
