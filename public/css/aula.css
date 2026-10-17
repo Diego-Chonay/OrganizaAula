@@ -1,0 +1,192 @@
+body {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 20px 24px 50px;
+    min-height: 100vh;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 22px;
+    margin-bottom: 35px;
+    background-color: #073642;
+    border: 1px solid #31545c;
+    border-radius: 12px;
+}
+
+nav a {
+    color: #eee8d5;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+nav a:hover {
+    color: #93c9d5;
+}
+
+nav form {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+h1 {
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+body > form {
+    max-width: 650px;
+    padding: 28px;
+    border: 1px solid #31545c;
+    border-radius: 12px;
+    background-color: #073642;
+}
+
+input:not([type="checkbox"]):not([type="hidden"]),
+select,
+textarea {
+    max-width: 100%;
+    padding: 10px 13px;
+    border: 1px solid #42616a;
+    border-radius: 7px;
+    background-color: #002b36;
+    color: #eee8d5;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #268bd2;
+    box-shadow: 0 0 0 3px rgba(38, 139, 210, 0.18);
+}
+
+button,
+input[type="submit"] {
+    padding: 9px 17px;
+    border: none;
+    border-radius: 7px;
+    background-color: #246f95;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background-color: #3287af;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th,
+td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #31545c;
+    text-align: left;
+}
+
+th {
+    background-color: #073642;
+}
+
+tr:hover {
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+a {
+    transition: color 0.2s ease;
+}
+
+@media (max-width: 700px) {
+    body {
+        padding: 12px;
+    }
+
+    nav {
+        padding: 14px;
+    }
+
+    body > form {
+        padding: 18px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+nav {
+    color: #dce5e7;
+}
+
+nav a {
+    font-weight: 600;
+    color: #e8edf0;
+}
+
+nav a:hover {
+    color: #ffffff;
+}
+
+nav button {
+    font-weight: 600;
+    background-color: #215f7d;
+}
+
+h1, h2, h3 {
+    color: #e6edf0;
+    font-weight: 700;
+}
+
+body {
+    color: #c9d5d8;
+}
+
+p {
+    color: #b9c9ce;
+}
+nav {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px;
+    white-space: nowrap;
+    overflow-x: auto;
+    font-size: 0.85rem;
+}
+
+nav a {
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+nav form {
+    display: inline-flex !important;
+    flex-shrink: 0;
+    gap: 5px;
+    margin: 0;
+}
+
+nav form[action="/idioma/cambiar"] {
+    flex-basis: auto;
+    justify-content: center;
+}
+
+nav button {
+    padding: 7px 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
